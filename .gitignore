@@ -36,3 +36,6 @@ model_*.pkl
 # --- Uploads / runtime data ---
 misc/
 chroma_db/
+
+# Runtime logs
+*.log
