@@ -31,6 +31,11 @@ type ValuationResult = {
   exchange_price: number;
   condition_score: number;
   condition_grade: string;
+  device?: {
+    brand: string;
+    model: string;
+    storage: string;
+  };
 };
 
 const initialAnswers: Answers = {
@@ -699,6 +704,20 @@ function App() {
               here's our current estimate.
             </p>
 
+            {result.device && (
+              <div className="valued-device">
+                <span>Valuing:</span>
+                <strong>
+                  {result.device.brand}{" "}
+                  {result.device.model}
+                </strong>
+                <small>
+                  {result.device.storage} · condition{" "}
+                  {result.condition_grade}
+                </small>
+              </div>
+            )}
+
             <div className="price-grid">
 
               <div className="price-box">
@@ -776,9 +795,8 @@ function App() {
             </div>
 
             <p className="next-step">
-              This is our initial valuation engine.
-              Photo inspection and device diagnostics
-              will make future valuations more accurate.
+              This estimate uses current market data for the
+              exact model and storage variant selected above.
             </p>
 
             <button

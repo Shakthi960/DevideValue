@@ -256,6 +256,8 @@ def submit_answers(
             valuation["condition_grade"]
         ),
 
+        device=valuation["device"],
+
         model_source=(
             valuation["model_source"]
         ),

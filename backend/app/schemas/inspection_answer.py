@@ -11,6 +11,12 @@ class InspectionAnswersRequest(BaseModel):
     answers: List[InspectionAnswerItem]
 
 
+class ValuationDevice(BaseModel):
+    brand: str
+    model: str
+    storage: str
+
+
 class ValuationResponse(BaseModel):
     inspection_code: str
 
@@ -23,6 +29,8 @@ class ValuationResponse(BaseModel):
     condition_score: int
 
     condition_grade: str
+
+    device: ValuationDevice
 
     model_source: str
 

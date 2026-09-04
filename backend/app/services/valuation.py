@@ -633,9 +633,38 @@ def predict_market_price(
         model_input
     )
 
-    price = float(
+    ml_price = float(
         prediction[0]
     )
+
+    # --------------------------------------------------------
+    # GROUND TO REAL MARKET DATA
+    # --------------------------------------------------------
+    # The dataset holds the real recorded market price for the
+    # matched device. Blend it with the ML prediction so the
+    # estimate stays anchored to actual market data and is not
+    # distorted by a noisy single prediction.
+
+    recorded_price = float(
+        device_row.get("price_inr")
+        or 0
+    )
+
+    if recorded_price > 0:
+        # Keep the ML prediction within a sane band around the
+        # real recorded market price so rare/extrapolated
+        # variants cannot dominate the estimate.
+        ml_price = max(
+            recorded_price * 0.5,
+            min(
+                ml_price,
+                recorded_price * 1.5
+            )
+        )
+
+        price = (ml_price + recorded_price) / 2
+    else:
+        price = ml_price
 
     # --------------------------------------------------------
     # SAFETY LIMIT
@@ -1028,6 +1057,12 @@ def calculate_valuation(
         "condition_score": condition_score,
 
         "condition_grade": condition_grade,
+
+        "device": {
+            "brand": brand,
+            "model": model,
+            "storage": storage,
+        },
 
         "model_source": "Random Forest ML",
 

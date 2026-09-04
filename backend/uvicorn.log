@@ -1,0 +1,7 @@
+[2026-09-04 22:34:17] INFO app.services.valuation - ML price model loaded successfully.
+[2026-09-04 22:34:17] INFO app.services.valuation - Smartphone dataset loaded: 758 rows
+INFO:     Started server process [21000]
+INFO:     Waiting for application startup.
+[2026-09-04 22:34:31] INFO app.main - Starting Device Valuation Platform API...
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
