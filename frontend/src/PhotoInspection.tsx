@@ -1077,13 +1077,75 @@ function PhotoInspection({ onBack }: Props) {
                 <div
                   style={{
                     marginTop: "6px",
-                    color: "#64748b",
+                    display: "grid",
+                    gap: "5px",
+                    color: "#475569",
                     fontSize: "14px",
                   }}
                 >
                   {analysisResult.physical_condition_ai
-                    ?.message ||
-                    "Physical condition analysis is ready for the next AI stage."}
+                    ?.status === "unavailable" && (
+                    <div>
+                      Condition analysis is currently
+                      unavailable. Please try again later
+                      or retake the photos.
+                    </div>
+                  )}
+
+                  {analysisResult.physical_condition_ai
+                    ?.status === "partial" && (
+                    <div>
+                      Some photos could not be fully
+                      analyzed, so the estimate was adjusted
+                      down.
+                    </div>
+                  )}
+
+                  {analysisResult.physical_condition_ai
+                    ?.detected_views !== undefined && (
+                    <div>
+                      Phone detected in{" "}
+                      <strong>
+                        {
+                          analysisResult
+                            .physical_condition_ai
+                            .detected_views
+                        }
+                        /{
+                          analysisResult
+                            .physical_condition_ai
+                            .total_views
+                        }
+                      </strong>{" "}
+                      views
+                    </div>
+                  )}
+
+                  {analysisResult.physical_condition_ai
+                    ?.average_confidence !== undefined &&
+                    analysisResult.physical_condition_ai
+                      .average_confidence !== null && (
+                      <div>
+                        AI confidence:{" "}
+                        <strong>
+                          {(
+                            analysisResult
+                              .physical_condition_ai
+                              .average_confidence * 100
+                          ).toFixed(0)}
+                          %
+                        </strong>
+                      </div>
+                    )}
+
+                  {analysisResult.overall_photo_quality <
+                    60 && (
+                    <div>
+                      Photo quality is low, which reduces the
+                      condition score. Retake photos in good
+                      light for a better estimate.
+                    </div>
+                  )}
                 </div>
               </div>
 

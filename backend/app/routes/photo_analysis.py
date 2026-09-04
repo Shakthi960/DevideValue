@@ -112,38 +112,24 @@ def analyze_photos(
                 .from_(BUCKET_NAME)
                 .download(photo.storage_path)
             )
+        except Exception as error:
 
-            # -------------------------------------------------
-            # A. Existing OpenCV + YOLO analysis
-            # -------------------------------------------------
+            raise HTTPException(
+                status_code=500,
+                detail=(
+                    f"Unable to download "
+                    f"{photo.photo_type}: {error}"
+                )
+            )
 
+        # -------------------------------------------------
+        # A. Existing OpenCV + YOLO analysis
+        # -------------------------------------------------
+
+        try:
             photo_analysis = analyze_image(
                 image_bytes
             )
-
-            # -------------------------------------------------
-            # B. Gemini physical-condition analysis
-            # -------------------------------------------------
-
-            condition_analysis = analyze_condition(
-                image_bytes=image_bytes,
-                photo_type=photo.photo_type
-            )
-
-            # -------------------------------------------------
-            # C. Combine both results
-            # -------------------------------------------------
-
-            combined_analysis = {
-                **photo_analysis,
-                "physical_condition": condition_analysis
-            }
-
-            results.append({
-                "photo_type": photo.photo_type,
-                "analysis": combined_analysis
-            })
-
         except Exception as error:
 
             raise HTTPException(
@@ -153,6 +139,33 @@ def analyze_photos(
                     f"{photo.photo_type}: {error}"
                 )
             )
+
+        # -------------------------------------------------
+        # B. Gemini physical-condition analysis
+        #    (degrades gracefully on failure - e.g. quota)
+        # -------------------------------------------------
+
+        try:
+            condition_analysis = analyze_condition(
+                image_bytes=image_bytes,
+                photo_type=photo.photo_type
+            )
+        except Exception:
+            condition_analysis = None
+
+        # -------------------------------------------------
+        # C. Combine both results
+        # -------------------------------------------------
+
+        combined_analysis = {
+            **photo_analysis,
+            "physical_condition": condition_analysis
+        }
+
+        results.append({
+            "photo_type": photo.photo_type,
+            "analysis": combined_analysis
+        })
 
     # ---------------------------------------------------------
     # 5. Calculate overall photo quality
@@ -190,9 +203,11 @@ def analyze_photos(
     for item in results:
 
         condition = item["analysis"].get(
-            "physical_condition",
-            {}
+            "physical_condition"
         )
+
+        if not isinstance(condition, dict):
+            continue
 
         damage_score = condition.get(
             "visible_damage_score"
@@ -246,6 +261,51 @@ def analyze_photos(
         physical_condition_grade = "Pending"
 
     # ---------------------------------------------------------
+    # 6b. Capture reliability gating
+    # ---------------------------------------------------------
+    # A condition estimate is only trustworthy if the phone was
+    # actually detected in every required view AND the photos
+    # are clear. Poor/undetected photos discount the score.
+
+    total_views = len(results)
+
+    detected_views = sum(
+        1
+        for item in results
+        if item["analysis"]
+        .get("phone_detection", {})
+        .get("detected", False)
+    )
+
+    condition_analyzed_views = sum(
+        1
+        for item in results
+        if isinstance(
+            item["analysis"].get("physical_condition"),
+            dict
+        )
+    )
+
+    capture_factor = (
+        (overall_quality / 100.0)
+        * (detected_views / max(1, total_views))
+    )
+
+    if physical_condition_score is not None:
+
+        effective_condition_score = round(
+            physical_condition_score
+            * (
+                0.4
+                + 0.6 * capture_factor
+            )
+        )
+
+    else:
+
+        effective_condition_score = None
+
+    # ---------------------------------------------------------
     # 7. Average Gemini confidence
     # ---------------------------------------------------------
 
@@ -275,16 +335,35 @@ def analyze_photos(
         "overall_grade": overall_grade,
 
         "physical_condition_ai": {
-            "status": "completed",
+            "status": (
+                "completed"
+                if (
+                    physical_condition_score is not None
+                    and len(results) == total_views
+                    and condition_analyzed_views == total_views
+                )
+                else (
+                    "partial"
+                    if physical_condition_score is not None
+                    else "unavailable"
+                )
+            ),
 
             "condition_score":
                 physical_condition_score,
+
+            "effective_condition_score":
+                effective_condition_score,
 
             "condition_grade":
                 physical_condition_grade,
 
             "average_confidence":
-                average_confidence
+                average_confidence,
+
+            "detected_views": detected_views,
+
+            "total_views": total_views,
         },
 
         "photos": results
@@ -343,9 +422,17 @@ def photo_valuation(
         db
     )
 
-    physical_condition_score = (
+    physical_condition_ai = (
         analysis["physical_condition_ai"]
-        .get("condition_score")
+    )
+
+    physical_condition_score = (
+        physical_condition_ai.get(
+            "effective_condition_score"
+        )
+        or physical_condition_ai.get(
+            "condition_score"
+        )
     )
 
     if physical_condition_score is None:
@@ -522,9 +609,17 @@ def exchange_inspection_valuation(
         db
     )
 
-    ai_condition_score = (
+    ai_condition_ai = (
         analysis["physical_condition_ai"]
-        .get("condition_score")
+    )
+
+    ai_condition_score = (
+        ai_condition_ai.get(
+            "effective_condition_score"
+        )
+        or ai_condition_ai.get(
+            "condition_score"
+        )
     )
 
     if ai_condition_score is None:
