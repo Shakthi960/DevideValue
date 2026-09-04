@@ -1,0 +1,15 @@
+# Lightweight dependency set for CI test runs.
+# Excludes heavy vision/RAG/server-stack packages
+# (torch, ultralytics, sentence-transformers, chromadb, opencv)
+# that are not needed to run the unit tests.
+fastapi==0.141.1
+pydantic==2.12.5
+python-dotenv==1.1.0
+email-validator==2.3.0
+scikit-learn==1.7.1
+pandas==2.3.3
+numpy==2.1.3
+joblib==1.5.1
+SQLAlchemy==2.0.51
+httpx==0.28.1
+pytest==9.1.1

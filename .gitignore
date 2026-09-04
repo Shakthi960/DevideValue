@@ -1,0 +1,38 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+
+# --- Node ---
+node_modules/
+node/
+dist/
+dist_ssr/
+*.local
+
+# --- Environment / Secrets ---
+.env
+.env.*
+!.env.example
+
+# --- OS ---
+.DS_Store
+Thumbs.db
+
+# --- ML artifacts / models ---
+*.pkl
+*.joblib
+*.onnx
+model_*.pkl
+
+# --- IDE ---
+.idea/
+.vscode/
+*.swp
+
+# --- Uploads / runtime data ---
+misc/
+chroma_db/

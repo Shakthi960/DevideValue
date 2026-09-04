@@ -1,0 +1,355 @@
+.xi-app {
+  min-height: 100vh;
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+.xi-navbar {
+  height: 72px;
+  background: white;
+  border-bottom: 1px solid #e2e8f0;
+
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+
+  align-items: center;
+
+  padding: 0 30px;
+}
+
+.xi-logo {
+  font-size: 23px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.xi-logo span {
+  color: #2563eb;
+}
+
+.xi-back {
+  border: none;
+  background: transparent;
+  font-size: 25px;
+  cursor: pointer;
+  color: #334155;
+  justify-self: start;
+}
+
+.xi-progress {
+  justify-self: end;
+  font-size: 14px;
+  font-weight: 700;
+  color: #64748b;
+}
+
+.xi-page {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 60px 24px;
+}
+
+.xi-card {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 40px 36px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+}
+
+.xi-eyebrow {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #2563eb;
+  text-transform: uppercase;
+}
+
+.xi-card h1,
+.xi-question-card h1,
+.xi-result h1 {
+  font-size: 28px;
+  font-weight: 800;
+  margin: 8px 0 6px;
+}
+
+.xi-sub {
+  color: #64748b;
+  font-size: 15px;
+  margin: 0 0 24px;
+}
+
+.xi-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: #475569;
+  margin: 16px 0 6px;
+}
+
+.xi-select {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 14px 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 15px;
+  background: #f8fafc;
+  outline: none;
+}
+
+.xi-select:focus {
+  border-color: #2563eb;
+}
+
+.xi-primary-btn {
+  width: 100%;
+  border: none;
+  border-radius: 10px;
+  padding: 15px 20px;
+  background: #2563eb;
+  color: white;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-top: 24px;
+}
+
+.xi-primary-btn:hover {
+  background: #1d4ed8;
+}
+
+.xi-primary-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.xi-error {
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: 14px;
+  margin-top: 16px;
+}
+
+/* Questions */
+
+.xi-question-page {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 40px 24px;
+}
+
+.xi-progress-bar {
+  height: 8px;
+  background: #e2e8f0;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 30px;
+}
+
+.xi-progress-fill {
+  height: 100%;
+  background: #2563eb;
+  border-radius: 999px;
+  transition: width 0.3s;
+}
+
+.xi-question-card {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 36px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+}
+
+.xi-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.xi-option {
+  width: 100%;
+  text-align: left;
+  padding: 16px 18px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: white;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.xi-option:hover {
+  border-color: #2563eb;
+  background: #eff6ff;
+}
+
+.xi-option.selected {
+  border-color: #2563eb;
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-weight: 700;
+}
+
+/* Camera */
+
+.xi-camera-page {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 40px 24px;
+}
+
+.xi-camera-card {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 36px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+}
+
+.xi-camera-box {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #0f172a;
+  margin: 20px 0;
+  aspect-ratio: 3 / 4;
+  max-height: 460px;
+}
+
+.xi-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.xi-frame-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.8);
+  border: 3px solid rgba(255, 255, 255, 0.7);
+  margin: 16px;
+  border-radius: 14px;
+  pointer-events: none;
+}
+
+.xi-canvas {
+  display: none;
+}
+
+.xi-camera-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.xi-capture-btn {
+  border: none;
+  border-radius: 10px;
+  padding: 15px 24px;
+  background: #0f172a;
+  color: white;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 24px;
+}
+
+.xi-capture-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.xi-captured {
+  background: #ecfdf5;
+  color: #047857;
+  border: 1px solid #a7f3d0;
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-weight: 700;
+  margin-top: 24px;
+}
+
+.xi-submit-btn {
+  width: 100%;
+  border: none;
+  border-radius: 10px;
+  padding: 16px 20px;
+  background: #16a34a;
+  color: white;
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+  margin-top: 28px;
+}
+
+.xi-submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Result */
+
+.xi-result {
+  text-align: center;
+}
+
+.xi-result-card {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 22px;
+  padding: 36px;
+  margin: 24px 0;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+}
+
+.xi-result-main {
+  background: linear-gradient(135deg, #0f172a, #1e3a8a);
+  color: white;
+  border-radius: 16px;
+  padding: 28px;
+}
+
+.xi-result-price {
+  font-size: 52px;
+  font-weight: 800;
+}
+
+.xi-result-label {
+  color: #93c5fd;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.xi-result-details {
+  display: grid;
+  gap: 12px;
+  text-align: left;
+  padding: 24px 8px 8px;
+  font-size: 15px;
+  color: #475569;
+}
+
+.xi-result-details strong {
+  color: #0f172a;
+}
+
+.xi-inspection-code {
+  margin-top: 18px;
+  font-size: 13px;
+  color: #64748b;
+}

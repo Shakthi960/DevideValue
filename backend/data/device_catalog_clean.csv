@@ -1,0 +1,758 @@
+brand,model,ram,storage,variant_name
+AI+,Nova 5G,6,128,6GB + 128GB
+AI+,Nova 5G,8,128,8GB + 128GB
+AI+,Pulse,4,64,4GB + 64GB
+AI+,Pulse,6,128,6GB + 128GB
+Acer,Super ZX,4,128,4GB + 128GB
+Acer,Super ZX 5G,6,128,6GB + 128GB
+Acer,Super ZX 5G,8,128,8GB + 128GB
+Alcatel,V3 Classic,4,128,4GB + 128GB
+Alcatel,V3 Classic,6,128,6GB + 128GB
+Alcatel,V3 Pro,8,256,8GB + 256GB
+Alcatel,V3 Ultra,6,128,6GB + 128GB
+Alcatel,V3 Ultra,8,128,8GB + 128GB
+Apple,iPhone 15,6,256,6GB + 256GB
+Apple,iPhone 15,6,512,6GB + 512GB
+Apple,iPhone 15 Plus,6,256,6GB + 256GB
+Apple,iPhone 15 Pro,8,512,8GB + 512GB
+Apple,iPhone 16,8,256,8GB + 256GB
+Apple,iPhone 16,8,512,8GB + 512GB
+Apple,iPhone 16 Plus,8,256,8GB + 256GB
+Apple,iPhone 16 Plus,8,512,8GB + 512GB
+Apple,iPhone 16 Pro,8,256,8GB + 256GB
+Apple,iPhone 16 Pro,8,512,8GB + 512GB
+Apple,iPhone 16 Pro,8,1024,8GB + 1024GB
+Apple,iPhone 16 Pro Max,8,512,8GB + 512GB
+Apple,iPhone 16 Pro Max,8,1024,8GB + 1024GB
+Apple,iPhone 16e,8,128,8GB + 128GB
+Apple,iPhone 16e,8,256,8GB + 256GB
+Apple,iPhone 16e,8,512,8GB + 512GB
+Apple,iPhone 17,8,256,8GB + 256GB
+Apple,iPhone 17,8,512,8GB + 512GB
+Apple,iPhone 17 Pro,12,256,12GB + 256GB
+Apple,iPhone 17 Pro,12,512,12GB + 512GB
+Apple,iPhone 17 Pro,12,1024,12GB + 1024GB
+Apple,iPhone 17 Pro Max,12,256,12GB + 256GB
+Apple,iPhone 17 Pro Max,12,512,12GB + 512GB
+Apple,iPhone 17 Pro Max,12,1024,12GB + 1024GB
+Apple,iPhone 17 Pro Max,12,2048,12GB + 2048GB
+Apple,iPhone Air,8,256,8GB + 256GB
+Apple,iPhone Air,8,512,8GB + 512GB
+Apple,iPhone Air,8,1024,8GB + 1024GB
+Blackzone,F29 Pro,8,128,8GB + 128GB
+Blackzone,S25 Ultra Maxx,8,128,8GB + 128GB
+CMF,Phone (1),6,128,6GB + 128GB
+CMF,Phone 1,8,128,8GB + 128GB
+CMF,Phone 2 Pro,8,128,8GB + 128GB
+CMF,Phone 2 Pro 5G,8,256,8GB + 256GB
+Google,Pixel 10 5G,12,256,12GB + 256GB
+Google,Pixel 10 Pro,16,256,16GB + 256GB
+Google,Pixel 10 Pro Fold,16,256,16GB + 256GB
+Google,Pixel 10 Pro XL,16,256,16GB + 256GB
+Google,Pixel 8,8,256,8GB + 256GB
+Google,Pixel 8 Pro,12,256,12GB + 256GB
+Google,Pixel 8A,8,256,8GB + 256GB
+Google,Pixel 9 Pro Fold,16,256,16GB + 256GB
+Google,Pixel 9 Pro XL,16,256,16GB + 256GB
+Google,Pixel 9 Pro XL,16,512,16GB + 512GB
+Google,Pixel 9A,8,256,8GB + 256GB
+HMD,Crest,6,128,6GB + 128GB
+HMD,Crest Max,8,256,8GB + 256GB
+HMD,Fusion,6,128,6GB + 128GB
+HMD,Skyline 5G,12,256,12GB + 256GB
+HMD,Vibe 5G,4,128,4GB + 128GB
+Honor,200 Lite,8,256,8GB + 256GB
+Honor,200 Pro,12,512,12GB + 512GB
+Honor,X9c,8,256,8GB + 256GB
+Infinix,GT 30 5G,8,128,8GB + 128GB
+Infinix,GT 30 5G,8,256,8GB + 256GB
+Infinix,GT 30 Pro,8,256,8GB + 256GB
+Infinix,GT 30 Pro 5G,12,256,12GB + 256GB
+Infinix,Hot 50 5G,4,128,4GB + 128GB
+Infinix,Hot 50 5G,8,128,8GB + 128GB
+Infinix,Hot 60 5G,6,128,6GB + 128GB
+Infinix,Hot 60i 5G,4,128,4GB + 128GB
+Infinix,Note 30 5G,4,128,4GB + 128GB
+Infinix,Note 30 5G,8,256,8GB + 256GB
+Infinix,Note 40 5G,8,256,8GB + 256GB
+Infinix,Note 40 Pro 5G,8,256,8GB + 256GB
+Infinix,Note 40 Pro Plus 5G,12,256,12GB + 256GB
+Infinix,Note 40 Pro Plus Racing Edition,12,256,12GB + 256GB
+Infinix,Note 40 Pro Racing Edition,8,256,8GB + 256GB
+Infinix,Note 40X 5G,8,256,8GB + 256GB
+Infinix,Note 40X 5G,12,256,12GB + 256GB
+Infinix,Note 50X 5G,6,128,6GB + 128GB
+Infinix,Note 50X 5G,8,128,8GB + 128GB
+Infinix,Note 50s 5G,6,128,6GB + 128GB
+Infinix,Note 50s 5G,8,128,8GB + 128GB
+Infinix,Note 50s 5G,8,256,8GB + 256GB
+Infinix,Smart 10,4,64,4GB + 64GB
+Infinix,Smart 8,8,128,8GB + 128GB
+Infinix,Smart 8 Plus,4,128,4GB + 128GB
+Infinix,Smart 9 HD,3,64,3GB + 64GB
+Infinix,Zero 40 5G,12,256,12GB + 256GB
+Infinix,Zero Flip 5G,8,512,8GB + 512GB
+Itel,A50,3,64,3GB + 64GB
+Itel,A50,4,64,4GB + 64GB
+Itel,A50C,2,32,2GB + 32GB
+Itel,A70 4G,4,128,4GB + 128GB
+Itel,A90,4,64,4GB + 64GB
+Itel,A90 Limited,3,64,3GB + 64GB
+Itel,A95 5G,4,128,4GB + 128GB
+Itel,A95 5G,6,128,6GB + 128GB
+Itel,P55 5G,6,128,6GB + 128GB
+Itel,S24,8,128,8GB + 128GB
+Itel,Zeno 10,3,64,3GB + 64GB
+Itel,Zeno 10,4,64,4GB + 64GB
+Itel,Zeno 20,4,128,4GB + 128GB
+Itel,Zeno 5G,4,128,4GB + 128GB
+Lava,Agni 3 5G,8,256,8GB + 256GB
+Lava,Blaze 2 5G,6,128,6GB + 128GB
+Lava,Blaze AMOLED 2,6,128,6GB + 128GB
+Lava,Blaze Amoled,6,128,6GB + 128GB
+Lava,Blaze Curve 5G,8,256,8GB + 256GB
+Lava,Blaze Dragon 5G,4,128,4GB + 128GB
+Lava,Blaze Dragon 5G,6,128,6GB + 128GB
+Lava,Blaze Duo,6,128,6GB + 128GB
+Lava,Blaze Duo,8,128,8GB + 128GB
+Lava,Blaze Pro 5G,8,128,8GB + 128GB
+Lava,Blaze X 5G,4,128,4GB + 128GB
+Lava,Blaze X 5G,6,128,6GB + 128GB
+Lava,Blaze X 5G,8,128,8GB + 128GB
+Lava,Bold 5G,4,128,4GB + 128GB
+Lava,Bold 5G,6,128,6GB + 128GB
+Lava,Bold 5G,8,128,8GB + 128GB
+Lava,Bold N1,4,64,4GB + 64GB
+Lava,Bold N1 5G,4,64,4GB + 64GB
+Lava,Bold N1 5G,4,128,4GB + 128GB
+Lava,Bold N1 Lite,3,64,3GB + 64GB
+Lava,Bold N1 Pro,4,128,4GB + 128GB
+Lava,O1,4,64,4GB + 64GB
+Lava,O3,3,64,3GB + 64GB
+Lava,O3,4,64,4GB + 64GB
+Lava,O3 Pro,4,128,4GB + 128GB
+Lava,Play Ultra 5G,6,128,6GB + 128GB
+Lava,Play Ultra 5G,8,128,8GB + 128GB
+Lava,Shark,4,64,4GB + 64GB
+Lava,Shark 2,4,64,4GB + 64GB
+Lava,Shark 5G,4,64,4GB + 64GB
+Lava,Shark 5G,4,128,4GB + 128GB
+Lava,Storm Lite 5G,4,64,4GB + 64GB
+Lava,Storm Lite 5G,4,128,4GB + 128GB
+Lava,Storm Play 5G,6,128,6GB + 128GB
+Lava,Storm Play 5G,8,256,8GB + 256GB
+Lava,Yuva 4,4,64,4GB + 64GB
+Lava,Yuva 4,4,128,4GB + 128GB
+Lava,Yuva Smart,3,64,3GB + 64GB
+Lava,Yuva Smart 2,3,64,3GB + 64GB
+Lava,Yuva Star 2,4,64,4GB + 64GB
+Motorola,Edge 40 Neo,8,128,8GB + 128GB
+Motorola,Edge 40 Neo,12,256,12GB + 256GB
+Motorola,Edge 50 Fusion,12,256,12GB + 256GB
+Motorola,Edge 50 Pro,12,256,12GB + 256GB
+Motorola,Edge 50 Ultra 5G,12,512,12GB + 512GB
+Motorola,Edge 60 5G,12,256,12GB + 256GB
+Motorola,Edge 60 Fusion,8,256,8GB + 256GB
+Motorola,Edge 60 Fusion 5G,12,256,12GB + 256GB
+Motorola,Edge 60 Pro,8,256,8GB + 256GB
+Motorola,Edge 60 Pro,12,256,12GB + 256GB
+Motorola,Edge 60 Pro,16,512,16GB + 512GB
+Motorola,Edge 60 Stylus,8,256,8GB + 256GB
+Motorola,Moto Edge 50 Neo,8,256,8GB + 256GB
+Motorola,Moto G04,4,64,4GB + 64GB
+Motorola,Moto G04,8,128,8GB + 128GB
+Motorola,Moto G04s,4,64,4GB + 64GB
+Motorola,Moto G05,4,64,4GB + 64GB
+Motorola,Moto G06 Power,4,64,4GB + 64GB
+Motorola,Moto G24 Power,4,128,4GB + 128GB
+Motorola,Moto G34 5G,8,128,8GB + 128GB
+Motorola,Moto G35 5G,4,128,4GB + 128GB
+Motorola,Moto G35 5G,8,128,8GB + 128GB
+Motorola,Moto G45 5G,4,128,4GB + 128GB
+Motorola,Moto G45 5G,8,128,8GB + 128GB
+Motorola,Moto G54 5G,8,128,8GB + 128GB
+Motorola,Moto G54 5G,12,256,12GB + 256GB
+Motorola,Moto G64 5G,8,128,8GB + 128GB
+Motorola,Moto G67 Power 5G,8,128,8GB + 128GB
+Motorola,Moto G84 5G,12,256,12GB + 256GB
+Motorola,Moto G85 5G,8,128,8GB + 128GB
+Motorola,Moto G85 5G,12,256,12GB + 256GB
+Motorola,Moto G86 Power 5G,8,128,8GB + 128GB
+Motorola,Moto G96 5G,8,128,8GB + 128GB
+Motorola,Moto G96 5G,8,256,8GB + 256GB
+Motorola,Razr 40,8,256,8GB + 256GB
+Motorola,Razr 50,8,256,8GB + 256GB
+Motorola,Razr 50 Ultra,12,512,12GB + 512GB
+Motorola,Razr 60 (Swarovski),8,256,8GB + 256GB
+Motorola,Razr 60 5G,8,256,8GB + 256GB
+Motorola,Razr 60 Ultra,16,512,16GB + 512GB
+Nothing,Phone 2a,8,128,8GB + 128GB
+Nothing,Phone 2a,8,256,8GB + 256GB
+Nothing,Phone 2a,12,256,12GB + 256GB
+Nothing,Phone 2a Plus,8,256,8GB + 256GB
+Nothing,Phone 2a Plus,12,256,12GB + 256GB
+Nothing,Phone 3,16,512,16GB + 512GB
+Nothing,Phone 3 5G,12,256,12GB + 256GB
+Nothing,Phone 3a,8,128,8GB + 128GB
+Nothing,Phone 3a,8,256,8GB + 256GB
+Nothing,Phone 3a Lite,8,128,8GB + 128GB
+Nothing,Phone 3a Lite,8,256,8GB + 256GB
+Nothing,Phone 3a Pro,8,128,8GB + 128GB
+Nothing,Phone 3a Pro,8,256,8GB + 256GB
+Nothing,Phone 3a Pro,12,256,12GB + 256GB
+OnePlus,12,16,512,16GB + 512GB
+OnePlus,12R,8,256,8GB + 256GB
+OnePlus,12R,16,256,16GB + 256GB
+OnePlus,13,12,256,12GB + 256GB
+OnePlus,13,16,512,16GB + 512GB
+OnePlus,13,24,1024,24GB + 1024GB
+OnePlus,13R,16,512,16GB + 512GB
+OnePlus,13R 5G,12,256,12GB + 256GB
+OnePlus,13s,12,512,12GB + 512GB
+OnePlus,13s 5G,12,256,12GB + 256GB
+OnePlus,Nord 3 5G,16,256,16GB + 256GB
+OnePlus,Nord 4 5G,8,256,8GB + 256GB
+OnePlus,Nord 4 5G,12,256,12GB + 256GB
+OnePlus,Nord 5,12,256,12GB + 256GB
+OnePlus,Nord CE 4 5G,8,256,8GB + 256GB
+OnePlus,Nord CE 4 Lite 5G,8,256,8GB + 256GB
+OnePlus,Nord CE 5 5G,8,128,8GB + 128GB
+OnePlus,Nord CE 5 5G,8,256,8GB + 256GB
+OnePlus,Nord CE 5 5G,12,256,12GB + 256GB
+OnePlus,Open 5G Apex Edition,16,1024,16GB + 1024GB
+Oppo,A18,4,64,4GB + 64GB
+Oppo,A18,4,128,4GB + 128GB
+Oppo,A3 5G 2024,6,128,6GB + 128GB
+Oppo,A3 Pro 5G,8,128,8GB + 128GB
+Oppo,A3 Pro 5G,8,256,8GB + 256GB
+Oppo,A38,4,128,4GB + 128GB
+Oppo,A3x 4G,4,64,4GB + 64GB
+Oppo,A3x 4G,4,128,4GB + 128GB
+Oppo,A3x 5G,4,64,4GB + 64GB
+Oppo,A3x 5G,4,128,4GB + 128GB
+Oppo,A5 (2025),6,128,6GB + 128GB
+Oppo,A5 Pro 5G,8,128,8GB + 128GB
+Oppo,A5 Pro 5G,8,256,8GB + 256GB
+Oppo,A58 4G,6,128,6GB + 128GB
+Oppo,A59 5G,6,128,6GB + 128GB
+Oppo,A5x 4G,4,64,4GB + 64GB
+Oppo,A5x 4G,4,128,4GB + 128GB
+Oppo,A5x 5G,4,64,4GB + 64GB
+Oppo,A5x 5G,4,128,4GB + 128GB
+Oppo,A5x 5G,6,128,6GB + 128GB
+Oppo,A78 4G,8,128,8GB + 128GB
+Oppo,A79 5G,8,128,8GB + 128GB
+Oppo,F25 Pro 5G,8,128,8GB + 128GB
+Oppo,F25 Pro 5G,8,256,8GB + 256GB
+Oppo,F27,8,256,8GB + 256GB
+Oppo,F27 5G,8,128,8GB + 128GB
+Oppo,F27 Pro Plus 5G,8,256,8GB + 256GB
+Oppo,F29,8,128,8GB + 128GB
+Oppo,F29,8,256,8GB + 256GB
+Oppo,F29 Pro,8,256,8GB + 256GB
+Oppo,F29 Pro,12,256,12GB + 256GB
+Oppo,F29 Pro 5G,8,128,8GB + 128GB
+Oppo,F31 5G,8,128,8GB + 128GB
+Oppo,F31 5G,8,256,8GB + 256GB
+Oppo,F31 Pro 5G,8,128,8GB + 128GB
+Oppo,F31 Pro 5G,8,256,8GB + 256GB
+Oppo,F31 Pro 5G,12,256,12GB + 256GB
+Oppo,F31 Pro Plus 5G,8,256,8GB + 256GB
+Oppo,F31 Pro Plus 5G,12,256,12GB + 256GB
+Oppo,Find X8 5G,12,256,12GB + 256GB
+Oppo,Find X8 5G,16,512,16GB + 512GB
+Oppo,K12x,6,128,6GB + 128GB
+Oppo,K12x 5G,8,256,8GB + 256GB
+Oppo,K13,8,128,8GB + 128GB
+Oppo,K13,8,256,8GB + 256GB
+Oppo,K13 Turbo,8,128,8GB + 128GB
+Oppo,K13 Turbo,8,256,8GB + 256GB
+Oppo,K13 Turbo Pro,8,256,8GB + 256GB
+Oppo,K13 Turbo Pro,12,256,12GB + 256GB
+Oppo,K13x 5G,4,128,4GB + 128GB
+Oppo,K13x 5G,6,128,6GB + 128GB
+Oppo,K13x 5G,8,128,8GB + 128GB
+Oppo,Reno 11,8,256,8GB + 256GB
+Oppo,Reno 12 5G,8,256,8GB + 256GB
+Oppo,Reno 12 Pro 5G,12,256,12GB + 256GB
+Oppo,Reno 12 Pro 5G,12,512,12GB + 512GB
+Oppo,Reno 13 5G,8,128,8GB + 128GB
+Oppo,Reno 13 5G,8,256,8GB + 256GB
+Oppo,Reno 13 5G,12,512,12GB + 512GB
+Oppo,Reno 13 Pro 5G,12,256,12GB + 256GB
+Oppo,Reno 13 Pro 5G,12,512,12GB + 512GB
+Oppo,Reno 14 5G,8,256,8GB + 256GB
+Oppo,Reno 14 5G,12,256,12GB + 256GB
+Oppo,Reno 14 5G,12,512,12GB + 512GB
+Oppo,Reno 14 5G Diwali Edition,8,256,8GB + 256GB
+Oppo,Reno 14 Pro 5G,12,256,12GB + 256GB
+Oppo,Reno 14 Pro 5G,12,512,12GB + 512GB
+POCO,C51,6,128,6GB + 128GB
+POCO,C65,4,128,4GB + 128GB
+POCO,C71,4,64,4GB + 64GB
+POCO,C71,6,128,6GB + 128GB
+POCO,C75 5G,4,64,4GB + 64GB
+POCO,C75 5G,4,128,4GB + 128GB
+POCO,F6 5G,12,256,12GB + 256GB
+POCO,F6 5G,12,512,12GB + 512GB
+POCO,F6 Deadpool Limited Edition,12,256,12GB + 256GB
+POCO,F7 5G,12,256,12GB + 256GB
+POCO,F7 5G,12,512,12GB + 512GB
+POCO,M6 5G,4,64,4GB + 64GB
+POCO,M6 5G,8,256,8GB + 256GB
+POCO,M6 Plus 5G,6,128,6GB + 128GB
+POCO,M6 Plus 5G,8,128,8GB + 128GB
+POCO,M6 Pro 5G,4,64,4GB + 64GB
+POCO,M6 Pro 5G,4,128,4GB + 128GB
+POCO,M6 Pro 5G,8,256,8GB + 256GB
+POCO,M7 5G,8,128,8GB + 128GB
+POCO,M7 Plus 5G,4,128,4GB + 128GB
+POCO,M7 Plus 5G,6,128,6GB + 128GB
+POCO,M7 Plus 5G,8,128,8GB + 128GB
+POCO,M7 Pro 5G,6,128,6GB + 128GB
+POCO,M7 Pro 5G,8,256,8GB + 256GB
+POCO,X6 5G,12,256,12GB + 256GB
+POCO,X6 5G,12,512,12GB + 512GB
+POCO,X6 Neo,8,128,8GB + 128GB
+POCO,X6 Neo,12,256,12GB + 256GB
+POCO,X6 Pro 5G,12,512,12GB + 512GB
+POCO,X7 5G,8,256,8GB + 256GB
+POCO,X7 Pro,12,256,12GB + 256GB
+Peace,Honor 30,3,32,3GB + 32GB
+Peace,Mini 4,3,32,3GB + 32GB
+Peace,Mini 5,3,32,3GB + 32GB
+Peace,Mini 6,3,32,3GB + 32GB
+Realme,11 Pro,12,256,12GB + 256GB
+Realme,11x 5G,6,128,6GB + 128GB
+Realme,12 5G,8,128,8GB + 128GB
+Realme,12 Plus 5G,8,128,8GB + 128GB
+Realme,12 Plus 5G,8,256,8GB + 256GB
+Realme,12 Pro 5G,8,256,8GB + 256GB
+Realme,12 Pro 5G,12,256,12GB + 256GB
+Realme,12 Pro Plus 5G,8,256,8GB + 256GB
+Realme,12 Pro Plus 5G,12,256,12GB + 256GB
+Realme,12X,4,128,4GB + 128GB
+Realme,12X,6,128,6GB + 128GB
+Realme,12X 5G,8,128,8GB + 128GB
+Realme,13 5G,8,128,8GB + 128GB
+Realme,13 5G,8,256,8GB + 256GB
+Realme,13 Plus 5G,8,128,8GB + 128GB
+Realme,13 Plus 5G,8,256,8GB + 256GB
+Realme,13 Plus 5G,12,256,12GB + 256GB
+Realme,13 Pro 5G,8,128,8GB + 128GB
+Realme,13 Pro 5G,8,256,8GB + 256GB
+Realme,13 Pro 5G,12,256,12GB + 256GB
+Realme,13 Pro 5G,12,512,12GB + 512GB
+Realme,13 Pro Plus 5G,8,256,8GB + 256GB
+Realme,13 Pro Plus 5G,12,256,12GB + 256GB
+Realme,13 Pro Plus 5G,12,512,12GB + 512GB
+Realme,14 Pro 5G,8,128,8GB + 128GB
+Realme,14 Pro 5G,8,256,8GB + 256GB
+Realme,14 Pro Lite 5G,8,128,8GB + 128GB
+Realme,14 Pro Lite 5G,8,256,8GB + 256GB
+Realme,14 Pro Plus,8,256,8GB + 256GB
+Realme,14 Pro Plus,12,256,12GB + 256GB
+Realme,14 Pro Plus,12,512,12GB + 512GB
+Realme,14 Pro Plus 5G,8,128,8GB + 128GB
+Realme,14T 5G,8,128,8GB + 128GB
+Realme,14T 5G,8,256,8GB + 256GB
+Realme,14x,8,128,8GB + 128GB
+Realme,14x 5G,6,128,6GB + 128GB
+Realme,15 5G,8,128,8GB + 128GB
+Realme,15 5G,8,256,8GB + 256GB
+Realme,15 5G,12,256,12GB + 256GB
+Realme,15 Pro 5G,8,128,8GB + 128GB
+Realme,15 Pro 5G,8,256,8GB + 256GB
+Realme,15 Pro 5G,12,256,12GB + 256GB
+Realme,15 Pro 5G,12,512,12GB + 512GB
+Realme,15 Pro Game of Thrones Limited Edition,12,512,12GB + 512GB
+Realme,15T,8,256,8GB + 256GB
+Realme,15T,12,256,12GB + 256GB
+Realme,15T 5G,8,128,8GB + 128GB
+Realme,15x 5G,6,128,6GB + 128GB
+Realme,15x 5G,8,128,8GB + 128GB
+Realme,15x 5G,8,256,8GB + 256GB
+Realme,C51,4,64,4GB + 64GB
+Realme,C51,4,128,4GB + 128GB
+Realme,C53,6,128,6GB + 128GB
+Realme,C61,4,64,4GB + 64GB
+Realme,C61,6,128,6GB + 128GB
+Realme,C63,4,64,4GB + 64GB
+Realme,C63,4,128,4GB + 128GB
+Realme,C63 5G,4,128,4GB + 128GB
+Realme,C63 5G,6,128,6GB + 128GB
+Realme,C63 5G,8,128,8GB + 128GB
+Realme,C65 5G,4,64,4GB + 64GB
+Realme,C65 5G,4,128,4GB + 128GB
+Realme,C65 5G,6,128,6GB + 128GB
+Realme,C65 5G,8,128,8GB + 128GB
+Realme,C67 5G,4,128,4GB + 128GB
+Realme,C67 5G,6,128,6GB + 128GB
+Realme,C71,4,64,4GB + 64GB
+Realme,C71,6,128,6GB + 128GB
+Realme,C73,4,64,4GB + 64GB
+Realme,C73,4,128,4GB + 128GB
+Realme,C75 5G,4,128,4GB + 128GB
+Realme,C75 5G,6,128,6GB + 128GB
+Realme,GT 6,8,256,8GB + 256GB
+Realme,GT 6 5G,12,256,12GB + 256GB
+Realme,GT 6 5G,16,512,16GB + 512GB
+Realme,GT 6T,8,128,8GB + 128GB
+Realme,GT 6T,8,256,8GB + 256GB
+Realme,GT 6T,12,512,12GB + 512GB
+Realme,GT 7,8,256,8GB + 256GB
+Realme,GT 7,12,256,12GB + 256GB
+Realme,GT 7,12,512,12GB + 512GB
+Realme,GT 7 Pro 5G,12,256,12GB + 256GB
+Realme,GT 7T,8,256,8GB + 256GB
+Realme,GT 7T,12,256,12GB + 256GB
+Realme,GT 7T,12,512,12GB + 512GB
+Realme,Narzo 60X,4,128,4GB + 128GB
+Realme,Narzo 70 Pro 5G,8,256,8GB + 256GB
+Realme,Narzo 70 Turbo 5G,6,128,6GB + 128GB
+Realme,Narzo 70 Turbo 5G,8,128,8GB + 128GB
+Realme,Narzo 70 Turbo 5G,12,256,12GB + 256GB
+Realme,Narzo 70x 5G,4,128,4GB + 128GB
+Realme,Narzo 70x 5G,6,128,6GB + 128GB
+Realme,Narzo 70x 5G,8,128,8GB + 128GB
+Realme,Narzo 80 Lite,6,128,6GB + 128GB
+Realme,Narzo 80 Lite 4G,4,128,4GB + 128GB
+Realme,Narzo 80 Lite 4G,6,128,6GB + 128GB
+Realme,Narzo 80 Lite 5G,4,128,4GB + 128GB
+Realme,Narzo 80 Pro 5G,8,128,8GB + 128GB
+Realme,Narzo 80 Pro 5G,8,256,8GB + 256GB
+Realme,Narzo 80 Pro 5G,12,256,12GB + 256GB
+Realme,Narzo 80x 5G,6,128,6GB + 128GB
+Realme,Narzo 80x 5G,8,128,8GB + 128GB
+Realme,Narzo N63,4,64,4GB + 64GB
+Realme,Narzo N63,4,128,4GB + 128GB
+Realme,Narzo N65 5G,6,128,6GB + 128GB
+Realme,Narzo N65 5G,8,128,8GB + 128GB
+Realme,P1 5G,6,128,6GB + 128GB
+Realme,P1 Pro 5G,8,128,8GB + 128GB
+Realme,P1 Pro 5G,8,256,8GB + 256GB
+Realme,P1 Speed 5G,8,128,8GB + 128GB
+Realme,P1 Speed 5G,8,256,8GB + 256GB
+Realme,P1 Speed 5G,12,256,12GB + 256GB
+Realme,P2 Pro,12,256,12GB + 256GB
+Realme,P2 Pro,12,512,12GB + 512GB
+Realme,P2 Pro 5G,8,128,8GB + 128GB
+Realme,P3 5G,6,128,6GB + 128GB
+Realme,P3 5G,8,128,8GB + 128GB
+Realme,P3 5G,8,256,8GB + 256GB
+Realme,P3 Lite 5G,4,128,4GB + 128GB
+Realme,P3 Lite 5G,6,128,6GB + 128GB
+Realme,P3 Pro 5G,8,128,8GB + 128GB
+Realme,P3 Pro 5G,8,256,8GB + 256GB
+Realme,P3 Pro 5G,12,256,12GB + 256GB
+Realme,P3 Ultra,8,128,8GB + 128GB
+Realme,P3 Ultra,8,256,8GB + 256GB
+Realme,P3 Ultra,12,256,12GB + 256GB
+Realme,P3x 5G,6,128,6GB + 128GB
+Realme,P3x 5G,8,128,8GB + 128GB
+Realme,P4 5G,6,128,6GB + 128GB
+Realme,P4 5G,8,128,8GB + 128GB
+Realme,P4 5G,8,256,8GB + 256GB
+Realme,P4 Pro 5G,8,128,8GB + 128GB
+Realme,P4 Pro 5G,8,256,8GB + 256GB
+Realme,P4 Pro 5G,12,256,12GB + 256GB
+Ringme,Bold P70,4,128,4GB + 128GB
+Samsung,Galaxy A05s,4,128,4GB + 128GB
+Samsung,Galaxy A06,4,64,4GB + 64GB
+Samsung,Galaxy A06,4,128,4GB + 128GB
+Samsung,Galaxy A06 5G,4,64,4GB + 64GB
+Samsung,Galaxy A06 5G,4,128,4GB + 128GB
+Samsung,Galaxy A06 5G,6,128,6GB + 128GB
+Samsung,Galaxy A07 4G,4,64,4GB + 64GB
+Samsung,Galaxy A14 4G,6,128,6GB + 128GB
+Samsung,Galaxy A16 5G,6,128,6GB + 128GB
+Samsung,Galaxy A17 5G,6,128,6GB + 128GB
+Samsung,Galaxy A17 5G,8,128,8GB + 128GB
+Samsung,Galaxy A17 5G,8,256,8GB + 256GB
+Samsung,Galaxy A25 5G,8,128,8GB + 128GB
+Samsung,Galaxy A26,6,128,6GB + 128GB
+Samsung,Galaxy A26,8,256,8GB + 256GB
+Samsung,Galaxy A26 5G,8,128,8GB + 128GB
+Samsung,Galaxy A35 5G,8,256,8GB + 256GB
+Samsung,Galaxy A36 5G,8,128,8GB + 128GB
+Samsung,Galaxy A36 5G,8,256,8GB + 256GB
+Samsung,Galaxy A36 5G,12,256,12GB + 256GB
+Samsung,Galaxy A55 5G,8,256,8GB + 256GB
+Samsung,Galaxy A55 5G,12,256,12GB + 256GB
+Samsung,Galaxy A56 5G,8,128,8GB + 128GB
+Samsung,Galaxy A56 5G,8,256,8GB + 256GB
+Samsung,Galaxy A56 5G,12,256,12GB + 256GB
+Samsung,Galaxy F05,4,64,4GB + 64GB
+Samsung,Galaxy F06 5G,4,64,4GB + 64GB
+Samsung,Galaxy F06 5G,4,128,4GB + 128GB
+Samsung,Galaxy F06 5G,6,128,6GB + 128GB
+Samsung,Galaxy F07,4,64,4GB + 64GB
+Samsung,Galaxy F15 5G,6,128,6GB + 128GB
+Samsung,Galaxy F15 5G,8,128,8GB + 128GB
+Samsung,Galaxy F16 5G,4,128,4GB + 128GB
+Samsung,Galaxy F16 5G,6,128,6GB + 128GB
+Samsung,Galaxy F16 5G,8,128,8GB + 128GB
+Samsung,Galaxy F17 5G,4,128,4GB + 128GB
+Samsung,Galaxy F17 5G,6,128,6GB + 128GB
+Samsung,Galaxy F34 5G,6,128,6GB + 128GB
+Samsung,Galaxy F34 5G,8,128,8GB + 128GB
+Samsung,Galaxy F36 5G,6,128,6GB + 128GB
+Samsung,Galaxy F36 5G,8,128,8GB + 128GB
+Samsung,Galaxy F36 5G,8,256,8GB + 256GB
+Samsung,Galaxy F55 5G,8,128,8GB + 128GB
+Samsung,Galaxy F55 5G,8,256,8GB + 256GB
+Samsung,Galaxy F55 5G,12,256,12GB + 256GB
+Samsung,Galaxy F56 5G,8,128,8GB + 128GB
+Samsung,Galaxy F56 5G,8,256,8GB + 256GB
+Samsung,Galaxy M05,4,64,4GB + 64GB
+Samsung,Galaxy M06,4,64,4GB + 64GB
+Samsung,Galaxy M06,6,128,6GB + 128GB
+Samsung,Galaxy M06 5G,4,128,4GB + 128GB
+Samsung,Galaxy M07 4G,4,64,4GB + 64GB
+Samsung,Galaxy M14 4G,4,64,4GB + 64GB
+Samsung,Galaxy M15 5G,8,128,8GB + 128GB
+Samsung,Galaxy M15 5G Prime Edition,6,128,6GB + 128GB
+Samsung,Galaxy M15 5G Prime Edition,8,128,8GB + 128GB
+Samsung,Galaxy M16 5G,6,128,6GB + 128GB
+Samsung,Galaxy M16 5G,8,128,8GB + 128GB
+Samsung,Galaxy M17 5G,4,128,4GB + 128GB
+Samsung,Galaxy M17 5G,6,128,6GB + 128GB
+Samsung,Galaxy M17 5G,8,128,8GB + 128GB
+Samsung,Galaxy M34 5G,8,128,8GB + 128GB
+Samsung,Galaxy M35 5G,8,128,8GB + 128GB
+Samsung,Galaxy M35 5G,8,256,8GB + 256GB
+Samsung,Galaxy M36 5G,8,128,8GB + 128GB
+Samsung,Galaxy M36 5G,8,256,8GB + 256GB
+Samsung,Galaxy M55,8,256,8GB + 256GB
+Samsung,Galaxy M55,12,256,12GB + 256GB
+Samsung,Galaxy M55s,8,128,8GB + 128GB
+Samsung,Galaxy M55s 5G,8,256,8GB + 256GB
+Samsung,Galaxy M56,8,256,8GB + 256GB
+Samsung,Galaxy M56 5G,8,128,8GB + 128GB
+Samsung,Galaxy S21 FE,8,128,8GB + 128GB
+Samsung,Galaxy S23 FE 5G,8,256,8GB + 256GB
+Samsung,Galaxy S24,8,512,8GB + 512GB
+Samsung,Galaxy S24 5G,8,256,8GB + 256GB
+Samsung,Galaxy S24 5G (Snapdragon),8,256,8GB + 256GB
+Samsung,Galaxy S24 FE,8,256,8GB + 256GB
+Samsung,Galaxy S24 FE 5G,8,128,8GB + 128GB
+Samsung,Galaxy S24 Ultra,12,512,12GB + 512GB
+Samsung,Galaxy S25,12,128,12GB + 128GB
+Samsung,Galaxy S25,12,512,12GB + 512GB
+Samsung,Galaxy S25 Edge,12,256,12GB + 256GB
+Samsung,Galaxy S25 Edge,12,512,12GB + 512GB
+Samsung,Galaxy S25 FE,8,128,8GB + 128GB
+Samsung,Galaxy S25 FE,8,256,8GB + 256GB
+Samsung,Galaxy S25 FE,8,512,8GB + 512GB
+Samsung,Galaxy S25 Plus,12,512,12GB + 512GB
+Samsung,Galaxy S25 Ultra,12,512,12GB + 512GB
+Samsung,Galaxy S25 Ultra,12,1024,12GB + 1024GB
+Samsung,Galaxy Z Flip 5,8,512,8GB + 512GB
+Samsung,Galaxy Z Flip 6,12,512,12GB + 512GB
+Samsung,Galaxy Z Flip 6 5G,12,256,12GB + 256GB
+Samsung,Galaxy Z Flip 7 5G,12,256,12GB + 256GB
+Samsung,Galaxy Z Flip 7 5G,12,512,12GB + 512GB
+Samsung,Galaxy Z Flip 7 FE,8,256,8GB + 256GB
+Samsung,Galaxy Z Flip 7 FE 5G,8,128,8GB + 128GB
+Samsung,Galaxy Z Fold 5,12,512,12GB + 512GB
+Samsung,Galaxy Z Fold 6,12,256,12GB + 256GB
+Samsung,Galaxy Z Fold 6,12,512,12GB + 512GB
+Samsung,Galaxy Z Fold 6,12,1024,12GB + 1024GB
+Samsung,Galaxy Z Fold 7,12,256,12GB + 256GB
+Samsung,Galaxy Z Fold 7,12,512,12GB + 512GB
+Samsung,Galaxy Z Fold 7,16,1024,16GB + 1024GB
+Tecno,Camon 20 Pro 5G,8,128,8GB + 128GB
+Tecno,Camon 30 5G,8,256,8GB + 256GB
+Tecno,Camon 30 5G,12,512,12GB + 512GB
+Tecno,Camon 30 Premier 5G,12,512,12GB + 512GB
+Tecno,POP 9 4G,3,64,3GB + 64GB
+Tecno,Phantom V Flip,8,256,8GB + 256GB
+Tecno,Phantom V Flip 2,8,256,8GB + 256GB
+Tecno,Phantom V Fold 2,12,512,12GB + 512GB
+Tecno,Pop 9 5G,4,64,4GB + 64GB
+Tecno,Pop 9 5G,4,128,4GB + 128GB
+Tecno,Pop 9 5G,8,128,8GB + 128GB
+Tecno,Pova 6 Neo 5G,6,128,6GB + 128GB
+Tecno,Pova 6 Neo 5G,8,256,8GB + 256GB
+Tecno,Pova 7 5G,8,128,8GB + 128GB
+Tecno,Pova 7 5G,8,256,8GB + 256GB
+Tecno,Pova 7 Pro 5G,8,128,8GB + 128GB
+Tecno,Pova 7 Pro 5G,8,256,8GB + 256GB
+Tecno,Pova Curve 5G,6,128,6GB + 128GB
+Tecno,Pova Curve 5G,8,128,8GB + 128GB
+Tecno,Pova Curve 5G,8,256,8GB + 256GB
+Tecno,Pova Slim 5G,8,128,8GB + 128GB
+Tecno,Spark 20 Pro 5G,8,256,8GB + 256GB
+Tecno,Spark 30C 5G,4,64,4GB + 64GB
+Tecno,Spark 30C 5G,4,128,4GB + 128GB
+Tecno,Spark 30C 5G,8,128,8GB + 128GB
+Tecno,Spark GO 1,3,64,3GB + 64GB
+Tecno,Spark Go 1,4,64,4GB + 64GB
+Tecno,Spark Go 2,3,64,3GB + 64GB
+Tecno,Spark Go 2,4,64,4GB + 64GB
+Tecno,Spark Go 5G,4,128,4GB + 128GB
+Ulefone,Armor 29 Pro 5G,16,512,16GB + 512GB
+Vivo,T3 5G,8,256,8GB + 256GB
+Vivo,T3 Lite 5G,4,128,4GB + 128GB
+Vivo,T3 Lite 5G,6,128,6GB + 128GB
+Vivo,T3 Pro,8,256,8GB + 256GB
+Vivo,T3 Ultra,8,128,8GB + 128GB
+Vivo,T3 Ultra,8,256,8GB + 256GB
+Vivo,T3 Ultra,12,256,12GB + 256GB
+Vivo,T3x 5G,6,128,6GB + 128GB
+Vivo,T3x 5G,8,128,8GB + 128GB
+Vivo,T4 5G,8,256,8GB + 256GB
+Vivo,T4 5G,12,256,12GB + 256GB
+Vivo,T4 Lite 5G,4,128,4GB + 128GB
+Vivo,T4 Lite 5G,6,128,6GB + 128GB
+Vivo,T4 Lite 5G,8,128,8GB + 128GB
+Vivo,T4 Pro 5G,8,128,8GB + 128GB
+Vivo,T4 Pro 5G,8,256,8GB + 256GB
+Vivo,T4 Pro 5G,12,256,12GB + 256GB
+Vivo,T4 Ultra,8,256,8GB + 256GB
+Vivo,T4 Ultra,12,256,12GB + 256GB
+Vivo,T4 Ultra,12,512,12GB + 512GB
+Vivo,T4R 5G,8,128,8GB + 128GB
+Vivo,T4R 5G,8,256,8GB + 256GB
+Vivo,T4R 5G,12,256,12GB + 256GB
+Vivo,T4x 5G,6,128,6GB + 128GB
+Vivo,T4x 5G,8,128,8GB + 128GB
+Vivo,T4x 5G,8,256,8GB + 256GB
+Vivo,V29e,8,128,8GB + 128GB
+Vivo,V30 5G,8,256,8GB + 256GB
+Vivo,V30 5G,12,256,12GB + 256GB
+Vivo,V30 Pro,12,512,12GB + 512GB
+Vivo,V30e 5G,8,128,8GB + 128GB
+Vivo,V40 5G,8,128,8GB + 128GB
+Vivo,V40 5G,8,256,8GB + 256GB
+Vivo,V40 5G,12,512,12GB + 512GB
+Vivo,V40 Pro,8,256,8GB + 256GB
+Vivo,V40 Pro 5G,12,512,12GB + 512GB
+Vivo,V40e 5G,8,128,8GB + 128GB
+Vivo,V40e 5G,8,256,8GB + 256GB
+Vivo,V50 5G,8,128,8GB + 128GB
+Vivo,V50 5G,8,256,8GB + 256GB
+Vivo,V50 5G,12,512,12GB + 512GB
+Vivo,V50e,8,256,8GB + 256GB
+Vivo,V50e 5G,8,128,8GB + 128GB
+Vivo,V60 5G,8,128,8GB + 128GB
+Vivo,V60 5G,8,256,8GB + 256GB
+Vivo,V60 5G,12,256,12GB + 256GB
+Vivo,V60 5G,16,512,16GB + 512GB
+Vivo,V60e,8,128,8GB + 128GB
+Vivo,V60e,8,256,8GB + 256GB
+Vivo,V60e,12,256,12GB + 256GB
+Vivo,X Fold 3 Pro,16,512,16GB + 512GB
+Vivo,X Fold 5 5G,16,512,16GB + 512GB
+Vivo,X100 5G,16,512,16GB + 512GB
+Vivo,X200,16,512,16GB + 512GB
+Vivo,X200 5G,12,256,12GB + 256GB
+Vivo,X200 FE,12,256,12GB + 256GB
+Vivo,X200 FE,16,512,16GB + 512GB
+Vivo,X200 Pro 5G,16,512,16GB + 512GB
+Vivo,Y17s,4,64,4GB + 64GB
+Vivo,Y18i,4,64,4GB + 64GB
+Vivo,Y18t,4,128,4GB + 128GB
+Vivo,Y19 5G,4,64,4GB + 64GB
+Vivo,Y19 5G,4,128,4GB + 128GB
+Vivo,Y19 5G,6,128,6GB + 128GB
+Vivo,Y19e,4,64,4GB + 64GB
+Vivo,Y19s 5G,4,64,4GB + 64GB
+Vivo,Y19s 5G,4,128,4GB + 128GB
+Vivo,Y19s 5G,6,128,6GB + 128GB
+Vivo,Y200e 5G,6,128,6GB + 128GB
+Vivo,Y27 4G,6,128,6GB + 128GB
+Vivo,Y28 5G,6,128,6GB + 128GB
+Vivo,Y28 5G,8,128,8GB + 128GB
+Vivo,Y28e 5G,4,64,4GB + 64GB
+Vivo,Y28e 5G,4,128,4GB + 128GB
+Vivo,Y28s 5G,4,128,4GB + 128GB
+Vivo,Y28s 5G,6,128,6GB + 128GB
+Vivo,Y28s 5G,8,128,8GB + 128GB
+Vivo,Y29 5G,4,128,4GB + 128GB
+Vivo,Y29 5G,6,128,6GB + 128GB
+Vivo,Y29 5G,8,128,8GB + 128GB
+Vivo,Y29 5G,8,256,8GB + 256GB
+Vivo,Y300 5G,8,256,8GB + 256GB
+Vivo,Y300 Plus,8,128,8GB + 128GB
+Vivo,Y31 5G,4,128,4GB + 128GB
+Vivo,Y31 5G,6,128,6GB + 128GB
+Vivo,Y31 Pro 5G,8,128,8GB + 128GB
+Vivo,Y31 Pro 5G,8,256,8GB + 256GB
+Vivo,Y39 5G,8,128,8GB + 128GB
+Vivo,Y39 5G,8,256,8GB + 256GB
+Vivo,Y400 5G,8,128,8GB + 128GB
+Vivo,Y400 5G,8,256,8GB + 256GB
+Vivo,Y400 Pro 5G,8,128,8GB + 128GB
+Vivo,Y400 Pro 5G,8,256,8GB + 256GB
+Vivo,Y58 5G,8,128,8GB + 128GB
+Xiaomi,14 Civi,8,256,8GB + 256GB
+Xiaomi,14 Civi,12,512,12GB + 512GB
+Xiaomi,14 Civi Limited Edition,12,512,12GB + 512GB
+Xiaomi,15,12,512,12GB + 512GB
+Xiaomi,Redmi 12 4G,6,128,6GB + 128GB
+Xiaomi,Redmi 12 5G,6,128,6GB + 128GB
+Xiaomi,Redmi 12 5G,8,256,8GB + 256GB
+Xiaomi,Redmi 13 5G,6,128,6GB + 128GB
+Xiaomi,Redmi 13 5G,8,128,8GB + 128GB
+Xiaomi,Redmi 13C,6,128,6GB + 128GB
+Xiaomi,Redmi 13C,8,256,8GB + 256GB
+Xiaomi,Redmi 13C 4G,4,128,4GB + 128GB
+Xiaomi,Redmi 13C 5G,4,128,4GB + 128GB
+Xiaomi,Redmi 13C 5G,6,128,6GB + 128GB
+Xiaomi,Redmi 13C 5G,8,256,8GB + 256GB
+Xiaomi,Redmi 14C 5G,4,64,4GB + 64GB
+Xiaomi,Redmi 14C 5G,4,128,4GB + 128GB
+Xiaomi,Redmi 14C 5G,6,128,6GB + 128GB
+Xiaomi,Redmi 15 5G,6,128,6GB + 128GB
+Xiaomi,Redmi 15 5G,8,128,8GB + 128GB
+Xiaomi,Redmi 15 5G,8,256,8GB + 256GB
+Xiaomi,Redmi A3,4,128,4GB + 128GB
+Xiaomi,Redmi A3,6,128,6GB + 128GB
+Xiaomi,Redmi A3x,3,64,3GB + 64GB
+Xiaomi,Redmi A3x,4,64,4GB + 64GB
+Xiaomi,Redmi A3x,4,128,4GB + 128GB
+Xiaomi,Redmi A4 5G,4,64,4GB + 64GB
+Xiaomi,Redmi A4 5G,4,128,4GB + 128GB
+Xiaomi,Redmi A4 5G,6,128,6GB + 128GB
+Xiaomi,Redmi A5 4G,3,64,3GB + 64GB
+Xiaomi,Redmi A5 4G,4,128,4GB + 128GB
+Xiaomi,Redmi Note 12 Pro,12,256,12GB + 256GB
+Xiaomi,Redmi Note 13 5G,8,256,8GB + 256GB
+Xiaomi,Redmi Note 13 5G,12,256,12GB + 256GB
+Xiaomi,Redmi Note 13 Pro 5G,8,256,8GB + 256GB
+Xiaomi,Redmi Note 13 Pro Plus,12,256,12GB + 256GB
+Xiaomi,Redmi Note 14,8,128,8GB + 128GB
+Xiaomi,Redmi Note 14,8,256,8GB + 256GB
+Xiaomi,Redmi Note 14 Pro,8,256,8GB + 256GB
+Xiaomi,Redmi Note 14 Pro Plus,12,512,12GB + 512GB
+Xiaomi,Redmi Note 14 SE 5G,6,128,6GB + 128GB
+iQOO,13,16,512,16GB + 512GB
+iQOO,Neo 10,8,128,8GB + 128GB
+iQOO,Neo 10,8,256,8GB + 256GB
+iQOO,Neo 10,12,256,12GB + 256GB
+iQOO,Neo 10,16,512,16GB + 512GB
+iQOO,Neo 10R,8,128,8GB + 128GB
+iQOO,Neo 10R,8,256,8GB + 256GB
+iQOO,Neo 10R,12,256,12GB + 256GB
+iQOO,Neo 9 Pro 5G,8,256,8GB + 256GB
+iQOO,Neo 9 Pro 5G,12,256,12GB + 256GB
+iQOO,Z10 5G,8,128,8GB + 128GB
+iQOO,Z10 5G,8,256,8GB + 256GB
+iQOO,Z10 5G,12,256,12GB + 256GB
+iQOO,Z10 Lite,4,128,4GB + 128GB
+iQOO,Z10 Lite 5G,6,128,6GB + 128GB
+iQOO,Z10 Lite 5G,8,256,8GB + 256GB
+iQOO,Z10R,8,128,8GB + 128GB
+iQOO,Z10R,8,256,8GB + 256GB
+iQOO,Z10R,12,256,12GB + 256GB
+iQOO,Z10x,6,128,6GB + 128GB
+iQOO,Z10x 5G,8,128,8GB + 128GB
+iQOO,Z10x 5G,8,256,8GB + 256GB
+iQOO,Z9 Lite 5G,4,128,4GB + 128GB
+iQOO,Z9s,8,256,8GB + 256GB
+iQOO,Z9s,12,256,12GB + 256GB
+iQOO,Z9s 5G,8,128,8GB + 128GB
+iQOO,Z9s Pro,8,256,8GB + 256GB
+iQOO,Z9s Pro,12,256,12GB + 256GB
+iQOO,Z9s Pro 5G,8,128,8GB + 128GB

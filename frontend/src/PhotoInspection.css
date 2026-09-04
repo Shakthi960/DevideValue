@@ -1,0 +1,733 @@
+.photo-app {
+  min-height: 100vh;
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+.photo-navbar {
+  height: 72px;
+  background: white;
+  border-bottom: 1px solid #e2e8f0;
+
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+
+  align-items: center;
+
+  padding: 0 30px;
+}
+
+.photo-logo {
+  font-size: 23px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.photo-logo span {
+  color: #2563eb;
+}
+
+.photo-back {
+  border: none;
+  background: transparent;
+
+  font-size: 25px;
+
+  cursor: pointer;
+
+  color: #334155;
+
+  justify-self: start;
+}
+
+.photo-counter {
+  justify-self: end;
+
+  font-size: 14px;
+
+  font-weight: 700;
+
+  color: #64748b;
+}
+
+
+/* =========================
+   DEVICE INTRO
+   ========================= */
+
+.photo-device-page {
+  max-width: 680px;
+
+  margin: auto;
+
+  padding: 65px 20px 90px;
+}
+
+.photo-intro {
+  text-align: center;
+
+  margin-bottom: 35px;
+}
+
+.camera-icon {
+  width: 68px;
+  height: 68px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  margin: 0 auto 20px;
+
+  border-radius: 20px;
+
+  background: #eff6ff;
+
+  font-size: 32px;
+}
+
+.photo-eyebrow {
+  color: #2563eb;
+
+  font-size: 12px;
+
+  font-weight: 800;
+
+  letter-spacing: 1.7px;
+}
+
+.photo-intro h1 {
+  font-size: 40px;
+
+  letter-spacing: -1.5px;
+
+  margin: 10px 0 15px;
+}
+
+.photo-intro p {
+  color: #64748b;
+
+  line-height: 1.7;
+}
+
+.photo-device-card {
+  background: white;
+
+  border: 1px solid #e2e8f0;
+
+  border-radius: 20px;
+
+  padding: 35px;
+
+  box-shadow:
+    0 15px 40px rgba(15, 23, 42, 0.06);
+}
+
+.photo-device-card h2 {
+  margin-bottom: 25px;
+
+  font-size: 22px;
+}
+
+.photo-form-group {
+  margin-bottom: 20px;
+}
+
+.photo-form-group label {
+  display: block;
+
+  margin-bottom: 8px;
+
+  font-size: 13px;
+
+  font-weight: 700;
+
+  color: #334155;
+}
+
+.photo-form-group input,
+.photo-form-group select {
+  width: 100%;
+
+  box-sizing: border-box;
+
+  padding: 14px 15px;
+
+  border: 1px solid #cbd5e1;
+
+  border-radius: 9px;
+
+  background: white;
+
+  font-size: 15px;
+
+  outline: none;
+}
+
+.photo-form-group input:focus,
+.photo-form-group select:focus {
+  border-color: #2563eb;
+
+  box-shadow:
+    0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.photo-primary-btn {
+  width: 100%;
+
+  border: none;
+
+  border-radius: 10px;
+
+  padding: 15px 20px;
+
+  background: #2563eb;
+
+  color: white;
+
+  font-size: 15px;
+
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+.photo-primary-btn:hover {
+  background: #1d4ed8;
+}
+
+.photo-primary-btn:disabled {
+  opacity: 0.6;
+
+  cursor: not-allowed;
+}
+
+.valuation-btn {
+  margin-top: 24px;
+
+  background: #0f172a;
+}
+
+.valuation-btn:hover {
+  background: #1e3a8a;
+}
+
+.photo-error {
+  padding: 12px 15px;
+
+  margin: 15px 0;
+
+  border-radius: 8px;
+
+  background: #fef2f2;
+
+  border: 1px solid #fecaca;
+
+  color: #b91c1c;
+
+  font-size: 13px;
+}
+
+
+/* =========================
+   CAPTURE PAGE
+   ========================= */
+
+.capture-page {
+  max-width: 760px;
+
+  margin: auto;
+
+  padding: 35px 20px 70px;
+}
+
+.capture-progress {
+  display: flex;
+
+  justify-content: center;
+
+  gap: 10px;
+
+  margin-bottom: 40px;
+}
+
+.capture-dot {
+  width: 32px;
+  height: 32px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #e2e8f0;
+
+  color: #64748b;
+
+  font-size: 12px;
+
+  font-weight: 700;
+}
+
+.capture-dot.active {
+  background: #2563eb;
+
+  color: white;
+
+  transform: scale(1.1);
+}
+
+.capture-dot.completed {
+  background: #16a34a;
+
+  color: white;
+}
+
+.capture-content {
+  text-align: center;
+}
+
+.capture-content h1 {
+  font-size: 36px;
+
+  letter-spacing: -1px;
+
+  margin: 10px 0;
+}
+
+.capture-description {
+  color: #64748b;
+
+  margin-bottom: 25px;
+}
+
+
+/* Camera preview frame */
+
+.camera-frame {
+  position: relative;
+
+  max-width: 430px;
+
+  height: 500px;
+
+  margin: 0 auto 22px;
+
+  border-radius: 24px;
+
+  background: #0f172a;
+
+  overflow: hidden;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+}
+
+.frame-corner {
+  position: absolute;
+
+  width: 42px;
+  height: 42px;
+
+  border-color: #60a5fa;
+
+  border-style: solid;
+}
+
+.top-left {
+  top: 25px;
+  left: 25px;
+
+  border-width: 3px 0 0 3px;
+}
+
+.top-right {
+  top: 25px;
+  right: 25px;
+
+  border-width: 3px 3px 0 0;
+}
+
+.bottom-left {
+  bottom: 25px;
+  left: 25px;
+
+  border-width: 0 0 3px 3px;
+}
+
+.bottom-right {
+  bottom: 25px;
+  right: 25px;
+
+  border-width: 0 3px 3px 0;
+}
+
+
+/* Tips */
+
+.capture-tips {
+  display: flex;
+
+  justify-content: center;
+
+  gap: 20px;
+
+  flex-wrap: wrap;
+
+  margin-bottom: 25px;
+
+  color: #64748b;
+
+  font-size: 12px;
+}
+
+.capture-btn {
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 12px;
+
+  min-width: 190px;
+
+  padding: 15px 25px;
+
+  border: none;
+
+  border-radius: 50px;
+
+  background: #2563eb;
+
+  color: white;
+
+  font-size: 15px;
+
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.capture-btn:hover {
+  background: #1d4ed8;
+}
+
+.capture-btn:disabled {
+  opacity: 0.6;
+
+  cursor: not-allowed;
+}
+
+.shutter {
+  width: 22px;
+  height: 22px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border: 3px solid white;
+
+  border-radius: 50%;
+
+  font-size: 12px;
+}
+
+.capture-note {
+  margin-top: 14px;
+
+  color: #94a3b8;
+
+  font-size: 11px;
+}
+
+/* =========================
+   COMPLETE
+   ========================= */
+
+.complete-page {
+  max-width: 900px;
+
+  margin: auto;
+
+  padding: 55px 20px 80px;
+}
+
+.complete-card {
+  background: white;
+
+  border: 1px solid #e2e8f0;
+
+  border-radius: 22px;
+
+  padding: 40px;
+
+  text-align: center;
+
+  box-shadow:
+    0 15px 45px rgba(15, 23, 42, 0.06);
+}
+
+.complete-icon {
+  width: 65px;
+  height: 65px;
+
+  margin: 0 auto 20px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #dcfce7;
+
+  color: #16a34a;
+
+  font-size: 30px;
+
+  font-weight: 800;
+}
+
+.complete-card h1 {
+  font-size: 38px;
+
+  margin: 10px 0;
+}
+
+.complete-card > p {
+  color: #64748b;
+}
+
+
+/* Photo thumbnails */
+
+.photo-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, 1fr);
+
+  gap: 15px;
+
+  margin: 30px 0;
+}
+
+.photo-preview {
+  position: relative;
+
+  overflow: hidden;
+
+  border: 1px solid #e2e8f0;
+
+  border-radius: 12px;
+
+  background: #f8fafc;
+}
+
+.photo-preview img {
+  width: 100%;
+
+  height: 150px;
+
+  object-fit: cover;
+
+  display: block;
+}
+
+.preview-label {
+  display: flex;
+
+  align-items: center;
+
+  gap: 6px;
+
+  padding: 10px;
+
+  font-size: 12px;
+
+  font-weight: 700;
+
+  color: #334155;
+}
+
+.preview-label span {
+  color: #16a34a;
+}
+
+.photo-preview button {
+  margin: 0 10px 10px;
+
+  padding: 7px 12px;
+
+  border: 1px solid #cbd5e1;
+
+  border-radius: 7px;
+
+  background: white;
+
+  color: #475569;
+
+  font-size: 11px;
+
+  cursor: pointer;
+}
+
+.inspection-code-box {
+  margin: 25px 0;
+
+  padding: 20px;
+
+  background: #eff6ff;
+
+  border-radius: 12px;
+}
+
+.inspection-code-box span {
+  display: block;
+
+  font-size: 11px;
+
+  color: #64748b;
+
+  margin-bottom: 7px;
+}
+
+.inspection-code-box strong {
+  color: #2563eb;
+
+  font-size: 20px;
+
+  letter-spacing: 2px;
+}
+
+.analysis-note {
+  font-size: 11px;
+
+  margin-top: 12px;
+}
+
+
+/* =========================
+   MOBILE
+   ========================= */
+
+@media (max-width: 600px) {
+
+  .photo-navbar {
+    height: 62px;
+
+    padding: 0 18px;
+  }
+
+  .photo-logo {
+    font-size: 20px;
+  }
+
+  .photo-device-page {
+    padding-top: 40px;
+  }
+
+  .photo-intro h1 {
+    font-size: 32px;
+  }
+
+  .photo-device-card {
+    padding: 25px;
+  }
+
+  .capture-page {
+    padding-top: 25px;
+  }
+
+  .capture-progress {
+    gap: 5px;
+  }
+
+  .capture-dot {
+    width: 27px;
+    height: 27px;
+
+    font-size: 10px;
+  }
+
+  .capture-content h1 {
+    font-size: 29px;
+  }
+
+  .camera-frame {
+    height: 430px;
+
+    border-radius: 20px;
+  }
+
+  .phone-outline {
+    font-size: 70px;
+  }
+
+  .photo-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .complete-card {
+    padding: 25px;
+  }
+
+  .complete-card h1 {
+    font-size: 30px;
+  }
+}
+
+.camera-video {
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+
+  display: block;
+}
+
+.camera-overlay {
+  position: absolute;
+
+  inset: 0;
+
+  pointer-events: none;
+}
+
+.camera-guide {
+  position: absolute;
+
+  bottom: 35px;
+
+  left: 50%;
+
+  transform: translateX(-50%);
+
+  padding: 9px 15px;
+
+  border-radius: 30px;
+
+  background: rgba(15, 23, 42, 0.75);
+
+  color: white;
+
+  font-size: 12px;
+
+  white-space: nowrap;
+}
+
+.capture-canvas {
+  display: none;
+}
+
