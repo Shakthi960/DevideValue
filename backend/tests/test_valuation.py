@@ -98,6 +98,12 @@ class TestParseStorage:
     def test_numeric(self):
         assert parse_storage("256") == 256
 
+    def test_bare_pair_takes_storage_not_ram(self):
+        assert parse_storage("8 + 256") == 256
+        assert parse_storage("8+256") == 256
+        assert parse_storage("8/256") == 256
+        assert parse_storage("6 128") == 128
+
     def test_unknown_returns_none(self):
         assert parse_storage("unknown") is None
 

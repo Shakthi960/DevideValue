@@ -243,15 +243,18 @@ def parse_storage(storage):
             )
         )
 
-    # Example: 128
-    match = re.search(
+    # Example: 128 or "8 + 256" or "8/256"
+    # (no unit given: use the largest number, since the
+    #  RAM value is always smaller than the storage)
+    matches = re.findall(
         r"\d+",
         value
     )
 
-    if match:
-        return int(
-            match.group()
+    if matches:
+        return max(
+            int(m)
+            for m in matches
         )
 
     return None
