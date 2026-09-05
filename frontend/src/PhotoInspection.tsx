@@ -168,6 +168,9 @@ function PhotoInspection({ onBack }: Props) {
   const [creatingInspection, setCreatingInspection] =
     useState(false);
 
+  const [deviceChecking, setDeviceChecking] =
+    useState(false);
+
   const [cameraReady, setCameraReady] = useState(false);
   const [error, setError] = useState("");
 
@@ -271,6 +274,36 @@ function PhotoInspection({ onBack }: Props) {
     if (!brand || !effectiveModel || !effectiveStorage) {
       setError("Please complete all device details.");
       return;
+    }
+
+    setDeviceChecking(true);
+
+    try {
+      const params = new URLSearchParams({
+        brand,
+        model: effectiveModel,
+        storage: effectiveStorage,
+      });
+
+      const checkResponse = await fetch(
+        `${API_URL}/api/device-prices?${params.toString()}`
+      );
+
+      const checkData = checkResponse.ok
+        ? await checkResponse.json()
+        : null;
+
+      if (checkData?.resolution === "not_found") {
+        setError(
+          `Couldn't verify "${effectiveModel}" as a real phone. ` +
+            "Check the spelling or pick the closest model from the list."
+        );
+        return;
+      }
+    } catch {
+      // Verification unavailable - allow fallback path.
+    } finally {
+      setDeviceChecking(false);
     }
 
     setCreatingInspection(true);
@@ -662,9 +695,11 @@ function PhotoInspection({ onBack }: Props) {
             <button
               className="photo-primary-btn"
               onClick={createInspection}
-              disabled={creatingInspection}
+              disabled={creatingInspection || deviceChecking}
             >
-              {creatingInspection
+              {deviceChecking
+                ? "Checking device…"
+                : creatingInspection
                 ? "Starting..."
                 : "Start Photo Inspection →"}
             </button>
@@ -1255,6 +1290,21 @@ function PhotoInspection({ onBack }: Props) {
                   Market price:{" "}
                   <strong>₹{valuationResult.market_price?.toLocaleString("en-IN")}</strong>
                 </div>
+
+                {valuationResult.new_price_inr && (
+                  <div>
+                    New price today:{" "}
+                    <strong>
+                      ₹{valuationResult.new_price_inr.toLocaleString("en-IN")}
+                    </strong>
+                  </div>
+                )}
+
+                {valuationResult.price_source && (
+                  <div style={{ color: "#94a3b8", fontSize: "12px" }}>
+                    {valuationResult.price_source}
+                  </div>
+                )}
 
                 <div>
                   Condition score:{" "}

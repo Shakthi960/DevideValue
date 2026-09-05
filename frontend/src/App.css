@@ -666,6 +666,20 @@ footer .copyright {
   margin-top: 4px;
 }
 
+.new-price-line {
+  color: #334155;
+
+  font-size: 15px;
+
+  margin: -12px 0 22px;
+
+  text-align: center;
+}
+
+.new-price-line strong {
+  color: #0f172a;
+}
+
 .inspection-code {
   padding: 20px;
 

@@ -43,6 +43,8 @@ from app.routes.photo_analysis import (
 
 from app.routes.auth import router as auth_router
 
+from app.routes.device_prices import router as device_prices_router
+
 app = FastAPI(
     title="Device Valuation Platform API",
     description="AI-powered smartphone inspection and valuation platform",
@@ -74,6 +76,7 @@ app.include_router(
     photo_analysis_router
 )
 app.include_router(auth_router)
+app.include_router(device_prices_router)
 
 Base.metadata.create_all(bind=engine)
 

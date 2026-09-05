@@ -13,7 +13,7 @@ from app.models.device import Device
 from app.services.photo_analyzer import analyze_image
 from app.services.condition_analyzer import analyze_condition
 from app.services.valuation import (
-    predict_market_price,
+    get_market_price,
     calculate_condition_score,
 )
 
@@ -446,10 +446,12 @@ def photo_valuation(
     # ---------------------------------------------------------
 
     try:
-        market_price = predict_market_price(
-            brand=device.brand,
-            model=device.model,
-            storage=device.storage
+        market_price, new_price_inr, price_source = (
+            get_market_price(
+                brand=device.brand,
+                model=device.model,
+                storage=device.storage
+            )
         )
     except ValueError as error:
         raise HTTPException(
@@ -510,6 +512,8 @@ def photo_valuation(
         "inspection_code": inspection_code,
 
         "market_price": market_price,
+        "new_price_inr": new_price_inr,
+        "price_source": price_source,
         "resale_price": resale_price,
         "exchange_price": exchange_price,
 
@@ -638,10 +642,12 @@ def exchange_inspection_valuation(
     # ---------------------------------------------------------
 
     try:
-        market_price = predict_market_price(
-            brand=device.brand,
-            model=device.model,
-            storage=device.storage
+        market_price, new_price_inr, price_source = (
+            get_market_price(
+                brand=device.brand,
+                model=device.model,
+                storage=device.storage
+            )
         )
     except ValueError as error:
         raise HTTPException(
@@ -702,6 +708,8 @@ def exchange_inspection_valuation(
         "inspection_code": inspection_code,
 
         "market_price": market_price,
+        "new_price_inr": new_price_inr,
+        "price_source": price_source,
         "resale_price": resale_price,
         "exchange_price": exchange_price,
 

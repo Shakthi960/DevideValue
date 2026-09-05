@@ -30,6 +30,8 @@ type ValuationResult = {
   inspection_code: string;
   resale_price: number;
   exchange_price: number;
+  new_price_inr?: number;
+  price_source?: string;
   condition_score: number;
   condition_grade: string;
   device?: {
@@ -96,6 +98,7 @@ function App() {
 
   const [customModel, setCustomModel] = useState("");
   const [customStorage, setCustomStorage] = useState("");
+  const [deviceChecking, setDeviceChecking] = useState(false);
 
   const loadBrands = async () => {
     try {
@@ -212,18 +215,71 @@ function App() {
     setUser(null);
   };
 
-  const nextStep = () => {
+  const checkDevice = async (): Promise<string> => {
+    const effectiveModel =
+      device.model === CUSTOM
+        ? customModel.trim()
+        : device.model;
+    const effectiveStorage =
+      device.storage === CUSTOM
+        ? customStorage.trim()
+        : device.storage;
+
+    try {
+      const params = new URLSearchParams({
+        brand: device.brand || "",
+        model: effectiveModel,
+        storage: effectiveStorage,
+      });
+
+      const response = await fetch(
+        `${API_URL}/api/device-prices?${params.toString()}`
+      );
+
+      if (!response.ok) {
+        return "unknown";
+      }
+
+      const data = await response.json();
+
+      return (data?.resolution as string) || "unknown";
+    } catch {
+      return "unknown";
+    }
+  };
+
+  const nextStep = async () => {
     setError("");
 
     if (step === 1) {
       const effectiveModel =
-        device.model === CUSTOM ? customModel.trim() : device.model;
+        device.model === CUSTOM
+          ? customModel.trim()
+          : device.model;
       const effectiveStorage =
-        device.storage === CUSTOM ? customStorage.trim() : device.storage;
+        device.storage === CUSTOM
+          ? customStorage.trim()
+          : device.storage;
 
       if (!device.brand || !effectiveModel || !effectiveStorage) {
         setError("Please select a brand, model and variant.");
         return;
+      }
+
+      setDeviceChecking(true);
+
+      try {
+        const resolution = await checkDevice();
+
+        if (resolution === "not_found") {
+          setError(
+            `Couldn't verify "${effectiveModel}" as a real phone. ` +
+              "Check the spelling or pick the closest model from the list."
+          );
+          return;
+        }
+      } finally {
+        setDeviceChecking(false);
       }
     }
 
@@ -729,6 +785,18 @@ function App() {
               </div>
             )}
 
+            {result.new_price_inr && (
+              <div className="new-price-line">
+                New price today:{" "}
+                <strong>
+                  ₹
+                  {result.new_price_inr.toLocaleString(
+                    "en-IN"
+                  )}
+                </strong>
+              </div>
+            )}
+
             <div className="price-grid">
 
               <div className="price-box">
@@ -807,7 +875,10 @@ function App() {
 
             <p className="next-step">
               This estimate uses current market data for the
-              exact model and storage variant selected above.
+              exact model and storage variant selected above
+              {result.price_source
+                ? ` (${result.price_source}).`
+                : "."}
             </p>
 
             <button
@@ -1290,9 +1361,11 @@ function App() {
               <button
                 className="primary-btn"
                 onClick={nextStep}
-                disabled={loading}
+                disabled={loading || deviceChecking}
               >
-                Continue →
+                {deviceChecking
+                  ? "Checking device…"
+                  : "Continue →"}
               </button>
             ) : (
               <button

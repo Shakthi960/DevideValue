@@ -162,6 +162,7 @@ function ExchangeInspection({ onBack }: Props) {
   const [result, setResult] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [deviceChecking, setDeviceChecking] = useState(false);
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -229,7 +230,7 @@ function ExchangeInspection({ onBack }: Props) {
     }
   };
 
-  const startQuestions = () => {
+  const startQuestions = async () => {
     const effectiveModel =
       model === CUSTOM ? customModel.trim() : model;
     const effectiveStorage =
@@ -239,6 +240,38 @@ function ExchangeInspection({ onBack }: Props) {
       setError("Please select a brand, model and variant.");
       return;
     }
+
+    setDeviceChecking(true);
+    setError("");
+
+    try {
+      const params = new URLSearchParams({
+        brand,
+        model: effectiveModel,
+        storage: effectiveStorage,
+      });
+
+      const checkResponse = await fetch(
+        `${API_URL}/api/device-prices?${params.toString()}`
+      );
+
+      const checkData = checkResponse.ok
+        ? await checkResponse.json()
+        : null;
+
+      if (checkData?.resolution === "not_found") {
+        setError(
+          `Couldn't verify "${effectiveModel}" as a real phone. ` +
+            "Check the spelling or pick the closest model from the list."
+        );
+        return;
+      }
+    } catch {
+      // Verification unavailable - allow fallback path.
+    } finally {
+      setDeviceChecking(false);
+    }
+
     setQIndex(0);
     setPhase("questions");
   };
@@ -587,8 +620,11 @@ function ExchangeInspection({ onBack }: Props) {
             <button
               className="xi-primary-btn"
               onClick={startQuestions}
+              disabled={deviceChecking}
             >
-              Continue →
+              {deviceChecking
+                ? "Checking device…"
+                : "Continue →"}
             </button>
           </div>
         </main>
@@ -846,6 +882,19 @@ function ExchangeInspection({ onBack }: Props) {
                   ) ?? 0}
                 </strong>
               </div>
+              {result?.new_price_inr && (
+                <div>
+                  New price today:{" "}
+                  <strong>
+                    ₹{result.new_price_inr.toLocaleString("en-IN")}
+                  </strong>
+                </div>
+              )}
+              {result?.price_source && (
+                <div className="xi-result-detail-small">
+                  {result.price_source}
+                </div>
+              )}
               <div>
                 Condition score:{" "}
                 <strong>{result?.condition_score}/100</strong>

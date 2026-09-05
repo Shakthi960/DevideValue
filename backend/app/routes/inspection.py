@@ -248,6 +248,14 @@ def submit_answers(
             valuation["exchange_price"]
         ),
 
+        new_price_inr=(
+            valuation.get("new_price_inr")
+        ),
+
+        price_source=(
+            valuation.get("price_source")
+        ),
+
         condition_score=(
             valuation["condition_score"]
         ),

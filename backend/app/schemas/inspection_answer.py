@@ -26,6 +26,10 @@ class ValuationResponse(BaseModel):
 
     exchange_price: float
 
+    new_price_inr: float | None = None
+
+    price_source: str | None = None
+
     condition_score: int
 
     condition_grade: str
