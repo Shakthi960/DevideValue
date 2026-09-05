@@ -5,6 +5,7 @@ import ExchangeInspection from "./ExchangeInspection";
 import Diagnostics from "./Diagnostics";
 import Auth from "./Auth";
 import ErrorBoundary from "./ErrorBoundary";
+import SelectOrCustom, { CUSTOM } from "./components/SelectOrCustom";
 
 const API_URL = "http://127.0.0.1:8000";
 
@@ -92,6 +93,9 @@ function App() {
   const [brands, setBrands] = useState<string[]>([]);
   const [models, setModels] = useState<string[]>([]);
   const [variants, setVariants] = useState<any[]>([]);
+
+  const [customModel, setCustomModel] = useState("");
+  const [customStorage, setCustomStorage] = useState("");
 
   const loadBrands = async () => {
     try {
@@ -212,12 +216,13 @@ function App() {
     setError("");
 
     if (step === 1) {
-      if (
-        !device.brand ||
-        !device.model ||
-        !device.storage
-      ) {
-        setError("Please complete all device details.");
+      const effectiveModel =
+        device.model === CUSTOM ? customModel.trim() : device.model;
+      const effectiveStorage =
+        device.storage === CUSTOM ? customStorage.trim() : device.storage;
+
+      if (!device.brand || !effectiveModel || !effectiveStorage) {
+        setError("Please select a brand, model and variant.");
         return;
       }
     }
@@ -270,8 +275,14 @@ function App() {
           },
           body: JSON.stringify({
             brand: device.brand,
-            model: device.model,
-            storage: device.storage,
+            model:
+              device.model === CUSTOM
+                ? customModel.trim()
+                : device.model,
+            storage:
+              device.storage === CUSTOM
+                ? customStorage.trim()
+                : device.storage,
             inspection_type: "quick_value",
           }),
         }
@@ -852,6 +863,8 @@ function App() {
                     model: "",
                     storage: "",
                   });
+                  setCustomModel("");
+                  setCustomStorage("");
                   loadModels(value);
                 }}
               >
@@ -870,54 +883,57 @@ function App() {
             <div className="form-group">
               <label>Model</label>
 
-              <select
+              <SelectOrCustom
                 value={device.model}
-                onChange={(e) => {
-                  const value = e.target.value;
+                onValueChange={(value) => {
                   resetDeviceSelection({
                     model: value,
                     storage: "",
                   });
-                  loadVariants(device.brand, value);
-                }}
-                disabled={!models.length}
-              >
-                <option value="">
-                  Select model
-                </option>
 
-                {models.map((m) => (
-                  <option key={m} value={m}>
-                    {m}
-                  </option>
-                ))}
-              </select>
+                  if (value === CUSTOM) {
+                    setCustomStorage("");
+                    setVariants([]);
+                  } else {
+                    loadVariants(device.brand, value);
+                  }
+                }}
+                customValue={customModel}
+                onCustomChange={(value) =>
+                  setCustomModel(value)
+                }
+                options={models}
+                disabled={!models.length}
+                placeholder="Select model"
+                customPlaceholder="Type your model, e.g. Y200e 5G"
+              />
             </div>
 
             <div className="form-group">
               <label>Variant</label>
 
-              <select
+              <SelectOrCustom
                 value={device.storage}
-                onChange={(e) =>
-                  resetDeviceSelection({ storage: e.target.value })
+                onValueChange={(value) =>
+                  resetDeviceSelection({ storage: value })
                 }
-                disabled={!variants.length}
-              >
-                <option value="">
-                  Select variant
-                </option>
-
-                {variants.map((v: any, i: number) => (
-                  <option
-                    key={i}
-                    value={v.variant_name || v.storage || ""}
-                  >
-                    {v.variant_name ||
-                      `${v.ram} / ${v.storage}`}
-                  </option>
-                ))}
-              </select>
+                customValue={customStorage}
+                onCustomChange={(value) =>
+                  setCustomStorage(value)
+                }
+                options={variants.map((v: any) => v.variant_name || v.storage || "")}
+                disabled={
+                  !device.model ||
+                  (device.model !== CUSTOM && !variants.length)
+                }
+                placeholder={
+                  device.model === CUSTOM
+                    ? "Select variant (or Others)"
+                    : "Select variant"
+                }
+                customPlaceholder="Type RAM + storage, e.g. 8GB + 128GB"
+                optionLabel={(val) => val || "—"}
+              />
             </div>
           </>
         );

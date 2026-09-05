@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import "./ExchangeInspection.css";
+import SelectOrCustom, { CUSTOM } from "./components/SelectOrCustom";
 
 const API_URL = "http://127.0.0.1:8000";
 
@@ -146,6 +147,9 @@ function ExchangeInspection({ onBack }: Props) {
   const [models, setModels] = useState<string[]>([]);
   const [variants, setVariants] = useState<any[]>([]);
 
+  const [customModel, setCustomModel] = useState("");
+  const [customStorage, setCustomStorage] = useState("");
+
   const [inspectionCode, setInspectionCode] =
     useState<string | null>(null);
 
@@ -187,6 +191,8 @@ function ExchangeInspection({ onBack }: Props) {
     setStorage("");
     setModels([]);
     setVariants([]);
+    setCustomModel("");
+    setCustomStorage("");
 
     try {
       const response = await fetch(
@@ -224,7 +230,12 @@ function ExchangeInspection({ onBack }: Props) {
   };
 
   const startQuestions = () => {
-    if (!brand || !model || !storage) {
+    const effectiveModel =
+      model === CUSTOM ? customModel.trim() : model;
+    const effectiveStorage =
+      storage === CUSTOM ? customStorage.trim() : storage;
+
+    if (!brand || !effectiveModel || !effectiveStorage) {
       setError("Please select a brand, model and variant.");
       return;
     }
@@ -257,8 +268,14 @@ function ExchangeInspection({ onBack }: Props) {
           },
           body: JSON.stringify({
             brand,
-            model,
-            storage,
+            model:
+              model === CUSTOM
+                ? customModel.trim()
+                : model,
+            storage:
+              storage === CUSTOM
+                ? customStorage.trim()
+                : storage,
             inspection_type: "exchange_inspection",
           }),
         }
@@ -518,41 +535,52 @@ function ExchangeInspection({ onBack }: Props) {
             </select>
 
             <label className="xi-label">Model</label>
-            <select
+            <SelectOrCustom
               className="xi-select"
               value={model}
-              onChange={(e) => {
-                setModel(e.target.value);
-                loadVariants(e.target.value);
+              onValueChange={(value) => {
+                setModel(value);
+                setCustomStorage("");
+
+                if (value === CUSTOM) {
+                  setVariants([]);
+                  setStorage("");
+                } else {
+                  loadVariants(value);
+                }
               }}
+              customValue={customModel}
+              onCustomChange={(value) =>
+                setCustomModel(value)
+              }
+              options={models}
               disabled={!models.length}
-            >
-              <option value="">Select model</option>
-              {models.map((m) => (
-                <option key={m} value={m}>
-                  {m}
-                </option>
-              ))}
-            </select>
+              placeholder="Select model"
+              customPlaceholder="Type your model, e.g. Y200e 5G"
+            />
 
             <label className="xi-label">Variant</label>
-            <select
+            <SelectOrCustom
               className="xi-select"
               value={storage}
-              onChange={(e) => setStorage(e.target.value)}
-              disabled={!variants.length}
-            >
-              <option value="">Select variant</option>
-              {variants.map((v: any, i: number) => (
-                <option
-                  key={i}
-                  value={v.variant_name || v.storage || ""}
-                >
-                  {v.variant_name ||
-                    `${v.ram} / ${v.storage}`}
-                </option>
-              ))}
-            </select>
+              onValueChange={(value) => setStorage(value)}
+              customValue={customStorage}
+              onCustomChange={(value) =>
+                setCustomStorage(value)
+              }
+              options={variants.map((v: any) => v.variant_name || v.storage || "")}
+              disabled={
+                model === "" ||
+                (model !== CUSTOM && !variants.length)
+              }
+              placeholder={
+                model === CUSTOM
+                  ? "Select variant (or Others)"
+                  : "Select variant"
+              }
+              customPlaceholder="Type RAM + storage, e.g. 8GB + 128GB"
+              optionLabel={(val) => val || "—"}
+            />
 
             {error && <div className="xi-error">{error}</div>}
 

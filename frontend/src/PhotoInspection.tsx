@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import "./PhotoInspection.css";
+import SelectOrCustom, { CUSTOM } from "./components/SelectOrCustom";
 
 const API_URL = "http://127.0.0.1:8000";
 
@@ -65,6 +66,9 @@ function PhotoInspection({ onBack }: Props) {
   const [brands, setBrands] = useState<string[]>([]);
   const [models, setModels] = useState<string[]>([]);
   const [variants, setVariants] = useState<any[]>([]);
+
+  const [customModel, setCustomModel] = useState("");
+  const [customStorage, setCustomStorage] = useState("");
 
   const [catalogLoading, setCatalogLoading] = useState(false);
 
@@ -259,7 +263,12 @@ function PhotoInspection({ onBack }: Props) {
   const createInspection = async () => {
     setError("");
 
-    if (!brand || !model || !storage) {
+    const effectiveModel =
+      model === CUSTOM ? customModel.trim() : model;
+    const effectiveStorage =
+      storage === CUSTOM ? customStorage.trim() : storage;
+
+    if (!brand || !effectiveModel || !effectiveStorage) {
       setError("Please complete all device details.");
       return;
     }
@@ -276,8 +285,8 @@ function PhotoInspection({ onBack }: Props) {
           },
           body: JSON.stringify({
             brand,
-            model,
-            storage,
+            model: effectiveModel,
+            storage: effectiveStorage,
             inspection_type: "photo_inspection",
           }),
         }
@@ -567,6 +576,8 @@ function PhotoInspection({ onBack }: Props) {
                   setStorage("");
                   setModels([]);
                   setVariants([]);
+                  setCustomModel("");
+                  setCustomStorage("");
 
                   if (selectedBrand) {
                     loadModels(selectedBrand);
@@ -586,62 +597,60 @@ function PhotoInspection({ onBack }: Props) {
             <div className="photo-form-group">
               <label>Model</label>
 
-              <select
+              <SelectOrCustom
                 value={model}
                 disabled={!brand || catalogLoading}
-                onChange={(e) => {
-                  const selectedModel = e.target.value;
-
-                  setModel(selectedModel);
+                onValueChange={(value) => {
+                  setModel(value);
                   setStorage("");
-                  setVariants([]);
+                  setCustomStorage("");
 
-                  if (selectedModel) {
-                    loadVariants(brand, selectedModel);
+                  if (value === CUSTOM) {
+                    setVariants([]);
+                  } else if (brand) {
+                    loadVariants(brand, value);
                   }
                 }}
-              >
-                <option value="">
-                  {!brand
+                customValue={customModel}
+                onCustomChange={(value) =>
+                  setCustomModel(value)
+                }
+                options={models}
+                placeholder={
+                  !brand
                     ? "Select brand first"
                     : catalogLoading
                     ? "Loading models..."
-                    : "Select model"}
-                </option>
-
-                {models.map((item) => (
-                  <option key={item} value={item}>
-                    {item}
-                  </option>
-                ))}
-              </select>
+                    : "Select model"
+                }
+                customPlaceholder="Type your model, e.g. Y200e 5G"
+              />
             </div>
 
             <div className="photo-form-group">
               <label>RAM + Storage</label>
 
-              <select
+              <SelectOrCustom
                 value={storage}
                 disabled={!model || catalogLoading}
-                onChange={(e) => setStorage(e.target.value)}
-              >
-                <option value="">
-                  {!model
+                onValueChange={(value) =>
+                  setStorage(value)
+                }
+                customValue={customStorage}
+                onCustomChange={(value) =>
+                  setCustomStorage(value)
+                }
+                options={variants.map((v: any) => v.variant_name || v.storage || "")}
+                placeholder={
+                  !model
                     ? "Select model first"
                     : catalogLoading
                     ? "Loading variants..."
-                    : "Select variant"}
-                </option>
-
-                {variants.map((variant) => (
-                  <option
-                    key={variant.id}
-                    value={variant.storage}
-                  >
-                    {variant.variant_name}
-                  </option>
-                ))}
-              </select>
+                    : "Select variant"
+                }
+                customPlaceholder="Type RAM + storage, e.g. 8GB + 128GB"
+                optionLabel={(val) => val || "—"}
+              />
             </div>
 
             {error && (
