@@ -135,6 +135,16 @@
   margin-top: 16px;
 }
 
+.xi-warning {
+  background: #fffbeb;
+  color: #92400e;
+  border: 1px solid #fde68a;
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: 14px;
+  margin-top: 16px;
+}
+
 /* Questions */
 
 .xi-question-page {

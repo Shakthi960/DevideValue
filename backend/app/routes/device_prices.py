@@ -50,4 +50,14 @@ def device_price_check(
         "source": result.get("source"),
 
         "confidence": result.get("confidence"),
+
+        "estimated_price_inr": (
+            result.get("estimated_price_inr")
+        ),
+
+        "estimated_matched_model": (
+            result.get("estimated_matched_model")
+        ),
+
+        "notes": result.get("notes"),
     }

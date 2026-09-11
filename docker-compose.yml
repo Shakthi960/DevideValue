@@ -1,0 +1,37 @@
+# ============================================================
+# Device Valuation Platform — Docker Compose
+#
+# Usage:
+#   1. cp backend/.env.example backend/.env   # fill real values
+#   2. docker compose up --build              # rebuild + start
+#
+# Services:
+#   backend  (FastAPI)    -> http://localhost:8000  (docs at /docs)
+#   frontend (nginx SPA)  -> http://localhost:8080
+#
+# The frontend is served by nginx which proxies /api and /ml
+# to the backend service, so the browser only talks to one origin.
+# ============================================================
+
+services:
+  backend:
+    build: ./backend
+    env_file:
+      - ./backend/.env
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/data:/app/data
+      - ./backend/ml/models:/app/ml/models
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: ""
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+    restart: unless-stopped

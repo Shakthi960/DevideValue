@@ -3,9 +3,9 @@ import os
 import re
 from datetime import datetime, timedelta
 
-from google import genai
 from google.genai import types
 
+from app.core.gemini import MODEL_NAME, get_genai_client
 from app.core.logger import get_logger
 from app.core.database import SessionLocal
 from app.models.price_cache import PriceCache
@@ -15,14 +15,8 @@ from app.services.valuation import find_device
 logger = get_logger(__name__)
 
 
-genai_client = genai.Client(
-    api_key=os.getenv("GEMINI_API_KEY")
-)
+genai_client = get_genai_client()
 
-MODEL_NAME = os.getenv(
-    "GEMINI_MODEL",
-    "gemini-3.6-flash"
-)
 
 CACHE_TTL_DAYS = int(
     os.getenv(
@@ -333,10 +327,44 @@ def lookup(brand, model, storage, db=None):
             )
 
             if record and _is_fresh(record):
-                result = _result_from_record(
-                    record,
-                    "Gemini Market Data (cached)",
+                label = (
+                    "Registered device"
+                    if record.price_source == "custom"
+                    else "Gemini Market Data (cached)"
                 )
+                result = _result_from_record(record, label)
+
+                if (
+                    result is not None
+                    and result.get("exists") is False
+                    and result.get("estimated_price_inr") is None
+                ):
+                    estimate = _dataset_fallback(
+                        brand,
+                        model,
+                        storage,
+                    )
+
+                    if estimate is not None:
+                        result[
+                            "estimated_price_inr"
+                        ] = estimate[
+                            "used_resale_price_inr"
+                        ]
+
+                        result[
+                            "estimated_matched_model"
+                        ] = estimate[
+                            "matched_model"
+                        ]
+
+                        result["notes"] = (
+                            "New or recently launched "
+                            "device. Exact market price "
+                            "not verified; estimate is "
+                            "based on the closest known "
+                            "match."
+                        )
 
             if result is None:
 
@@ -423,6 +451,49 @@ def lookup(brand, model, storage, db=None):
                         "price_source": "gemini",
                         "source": "Gemini Market Data",
                     }
+
+                    if not exists:
+
+                        # New / recently launched devices are
+                        # often unknown to the oracle. Estimate
+                        # a price from the closest dataset
+                        # match instead of leaving the user
+                        # with nothing.
+                        estimate = _dataset_fallback(
+                            brand,
+                            model,
+                            storage,
+                        )
+
+                        if estimate is not None:
+                            result[
+                                "estimated_price_inr"
+                            ] = estimate[
+                                "used_resale_price_inr"
+                            ]
+
+                            result[
+                                "estimated_matched_model"
+                            ] = estimate[
+                                "matched_model"
+                            ]
+
+                            result["notes"] = (
+                                "New or recently launched "
+                                "device. Exact market price "
+                                "not verified; estimate is "
+                                "based on the closest known "
+                                "match."
+                            )
+
+                        else:
+                            result[
+                                "estimated_price_inr"
+                            ] = None
+
+                            result[
+                                "estimated_matched_model"
+                            ] = None
 
                 else:
 

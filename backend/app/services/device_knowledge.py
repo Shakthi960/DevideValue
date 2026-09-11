@@ -1,8 +1,5 @@
 import os
 
-import chromadb
-from sentence_transformers import SentenceTransformer
-
 from app.core.logger import get_logger
 
 
@@ -43,6 +40,20 @@ def get_embedding_model():
 
     if _embedding_model is None:
         logger.info("Loading RAG embedding model...")
+
+        # Imported lazily so the app can boot on deployments
+        # that do not install the sentence-transformers stack
+        # (e.g. Vercel function size limits).
+        try:
+            from sentence_transformers import (
+                SentenceTransformer,
+            )
+        except ImportError as exc:
+            raise RuntimeError(
+                "RAG embedding model is not installed "
+                "in this deployment."
+            ) from exc
+
         _embedding_model = SentenceTransformer(MODEL_NAME)
         logger.info("Embedding model loaded.")
 
@@ -54,6 +65,16 @@ def get_collection():
 
     if _collection is None:
         logger.info("Connecting to ChromaDB...")
+
+        # Imported lazily so the app can boot on deployments
+        # that do not install chromadb.
+        try:
+            import chromadb
+        except ImportError as exc:
+            raise RuntimeError(
+                "ChromaDB is not installed in this deployment."
+            ) from exc
+
         client = chromadb.PersistentClient(
             path=CHROMA_PATH
         )

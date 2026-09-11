@@ -1,8 +1,6 @@
-import os
-
-from google import genai
 from google.genai import types
 
+from app.core.gemini import MODEL_NAME, get_genai_client
 from app.services.device_knowledge import search_devices
 
 
@@ -10,15 +8,7 @@ from app.services.device_knowledge import search_devices
 # CONFIGURATION
 # ============================================================
 
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-
-client = (
-    genai.Client(api_key=GEMINI_API_KEY)
-    if GEMINI_API_KEY
-    else None
-)
-
-MODEL_NAME = "gemini-2.5-flash"
+client = get_genai_client()
 
 
 # ============================================================

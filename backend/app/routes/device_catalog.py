@@ -1,8 +1,14 @@
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
 from app.models.device_catalog import DeviceCatalog
+from app.models.price_cache import PriceCache
+from app.schemas.device_catalog import (
+    DeviceCatalogCreate,
+    DeviceCatalogCreateResponse,
+)
+from app.services.device_registry import register_device
 
 
 router = APIRouter(
@@ -53,6 +59,78 @@ def _page_params(
     ),
 ):
     return page, page_size
+
+
+@router.post("/devices")
+def add_device(
+    payload: DeviceCatalogCreate,
+    db: Session = Depends(get_db),
+):
+    try:
+        result = register_device(
+            db=db,
+            brand=payload.brand,
+            model=payload.model,
+            storage=payload.storage,
+            new_price_inr=payload.new_price_inr,
+            release_date=payload.release_date,
+        )
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=400,
+            detail=str(exc),
+        ) from exc
+
+    return DeviceCatalogCreateResponse(**result)
+
+
+@router.get("/devices/recent")
+def get_recent_devices(
+    db: Session = Depends(get_db),
+    limit: int = Query(
+        30,
+        ge=1,
+        le=200,
+    ),
+):
+    """
+    Admin view: recently added catalog devices.
+
+    Rows added through ``POST /devices`` (or the "Add to catalog"
+    flow) carry ``price_source == "custom"``, so we surface those
+    newest-first for review.
+    """
+    rows = (
+        db.query(PriceCache)
+        .filter(
+            PriceCache.price_source == "custom"
+        )
+        .order_by(
+            PriceCache.fetched_at.desc()
+        )
+        .limit(limit)
+        .all()
+    )
+
+    return {
+        "items": [
+            {
+                "id": row.id,
+                "brand": row.brand,
+                "model": row.model,
+                "storage": row.storage,
+                "price_inr": (
+                    row.new_price_inr
+                    if row.new_price_inr is not None
+                    else row.used_resale_price_inr
+                ),
+                "price_source": row.price_source,
+                "notes": row.notes,
+                "added_at": row.fetched_at,
+            }
+            for row in rows
+        ]
+    }
 
 
 @router.get("/brands")

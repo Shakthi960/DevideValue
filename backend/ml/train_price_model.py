@@ -1,4 +1,15 @@
 import os
+import sys
+
+try:
+    # Windows consoles default to cp1252, which cannot
+    # encode the rupee symbol (U+20B9) used in the
+    # performance output below.
+    sys.stdout.reconfigure(encoding="utf-8")
+except Exception:
+    # Non-console streams may not support reconfigure.
+    pass
+
 import joblib
 import pandas as pd
 
@@ -10,28 +21,11 @@ from sklearn.impute import SimpleImputer
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 
-
-# --------------------------------------------------
-# PATHS
-# --------------------------------------------------
-
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-DATA_PATH = os.path.join(
-    BASE_DIR,
-    "data",
-    "smartphones.csv"
-)
-
-MODEL_DIR = os.path.join(
-    BASE_DIR,
-    "ml",
-    "models"
-)
-
-MODEL_PATH = os.path.join(
+from ml.model_store import (
+    DATASET_PATH,
+    FEATURES,
     MODEL_DIR,
-    "price_model.joblib"
+    MODEL_PATH,
 )
 
 
@@ -44,7 +38,7 @@ print("DEVICE PRICE ML MODEL TRAINING")
 print("=" * 60)
 
 print("\nLoading dataset...")
-df = pd.read_csv(DATA_PATH)
+df = pd.read_csv(DATASET_PATH)
 
 print(f"Dataset rows: {len(df)}")
 print(f"Dataset columns: {len(df.columns)}")
@@ -65,42 +59,12 @@ print(f"Rows after cleaning: {len(df)}")
 
 
 # --------------------------------------------------
-# FEATURES
+# FEATURES (single source of truth: ml/model_store.py)
 # --------------------------------------------------
-
-features = [
-    "smartphone_brand",
-    "model",
-    "rating_score",
-    "processor_name",
-    "processor_brand",
-    "core_count",
-    "clock_speed_ghz",
-    "ram_gb",
-    "storage_gb",
-    "has_5g",
-    "has_nfc",
-    "has_ir_blaster",
-    "display_inches",
-    "res_width_px",
-    "res_height_px",
-    "refresh_rate_hz",
-    "battery_mah",
-    "fast_charging",
-    "charging_watt",
-    "rear_camera_count",
-    "front_camera_count",
-    "rear_camera_main_mp",
-    "front_camera_main_mp",
-    "os_name",
-    "memory_card_supported",
-    "memory_card_type",
-]
-
 
 # Keep only features that actually exist
 features = [
-    column for column in features
+    column for column in FEATURES
     if column in df.columns
 ]
 

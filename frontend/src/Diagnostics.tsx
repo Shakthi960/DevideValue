@@ -1,5 +1,8 @@
 import { useRef, useState } from "react";
 import "./Diagnostics.css";
+import LoadingSpinner from "./components/LoadingSpinner";
+import { getApiUrl } from "./config";
+import logo from "./logo.png";
 
 type TestStatus =
   | "pending"
@@ -98,6 +101,12 @@ function Diagnostics({ onBack }: Props) {
 
   const [tests, setTests] = useState<SensorTest[]>([
     {
+      id: "backend",
+      name: "Backend",
+      description: "Check the valuation API is reachable.",
+      status: "pending",
+    },
+    {
       id: "camera",
       name: "Camera",
       description: "Check the rear camera responds.",
@@ -131,6 +140,7 @@ function Diagnostics({ onBack }: Props) {
 
   const [running, setRunning] = useState(false);
   const [touchNotes, setTouchNotes] = useState("");
+  const [backendInfo, setBackendInfo] = useState("");
 
   const [selfReport, setSelfReport] = useState<
     Record<string, string>
@@ -181,6 +191,32 @@ function Diagnostics({ onBack }: Props) {
     });
   };
 
+  const checkBackend = async (): Promise<TestStatus> => {
+    try {
+      const response = await fetch(
+        getApiUrl(`/api/health`),
+        { signal: AbortSignal.timeout(5000) }
+      );
+
+      if (!response.ok) {
+        return "failed";
+      }
+
+      const data = await response.json();
+
+      setBackendInfo(
+        `Model: ${data.model_loaded ? "loaded" : "missing"} · ` +
+          `Dataset: ${data.dataset_rows} rows · ` +
+          `DB: ${data.database} · ` +
+          `Gemini: ${data.gemini_configured ? "configured" : "not configured"}`
+      );
+
+      return data?.status === "healthy" ? "passed" : "failed";
+    } catch {
+      return "failed";
+    }
+  };
+
   const checkCamera = async (): Promise<TestStatus> => {
     try {
       if (!navigator.mediaDevices?.getUserMedia) {
@@ -226,8 +262,12 @@ function Diagnostics({ onBack }: Props) {
 
   const runDiagnostics = async () => {
     setRunning(true);
+    setResultStatus("backend", "running");
     setResultStatus("camera", "running");
     setResultStatus("microphone", "running");
+
+    const backend = await checkBackend();
+    setResultStatus("backend", backend);
 
     const camera = await checkCamera();
     setResultStatus("camera", camera);
@@ -336,12 +376,19 @@ function Diagnostics({ onBack }: Props) {
             ←
           </button>
           <div className="diag-logo">
+            <img src={logo} alt="DeviceValue" className="brand-logo" />
             Device<span>Value</span>
           </div>
           <div />
         </header>
 
         <main className="diag-page">
+          {running && (
+            <LoadingSpinner
+              overlay
+              label="Running sensor tests..."
+            />
+          )}
           <div className="diag-card">
             <p className="diag-eyebrow">DEVICE DIAGNOSTICS</p>
             <h1>Check your device's hardware.</h1>
@@ -374,6 +421,10 @@ function Diagnostics({ onBack }: Props) {
 
             {touchNotes && (
               <div className="diag-note">{touchNotes}</div>
+            )}
+
+            {backendInfo && (
+              <div className="diag-note">{backendInfo}</div>
             )}
 
             <button
@@ -422,6 +473,7 @@ function Diagnostics({ onBack }: Props) {
             ←
           </button>
           <div className="diag-logo">
+            <img src={logo} alt="DeviceValue" className="brand-logo" />
             Device<span>Value</span>
           </div>
           <div className="diag-progress">
@@ -479,6 +531,7 @@ function Diagnostics({ onBack }: Props) {
           ←
         </button>
         <div className="diag-logo">
+          <img src={logo} alt="DeviceValue" className="brand-logo" />
           Device<span>Value</span>
         </div>
         <div />

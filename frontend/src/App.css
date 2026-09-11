@@ -316,9 +316,36 @@ button {
   display: grid;
 
   grid-template-columns:
-    repeat(4, 1fr);
+    repeat(2, 1fr);
 
   gap: 20px;
+}
+
+.notice-banner {
+  padding: 0 8%;
+}
+
+.notice-content {
+  max-width: 1250px;
+  margin: auto;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px 20px;
+  margin-top: 30px;
+  border-radius: 14px;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  color: #92400e;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.notice-icon {
+  font-size: 18px;
+  font-weight: 800;
+  flex-shrink: 0;
+  margin-top: 1px;
 }
 
 .service-card {
@@ -533,6 +560,84 @@ footer .copyright {
   border: 1px solid #fecaca;
 
   color: #dc2626;
+
+  font-size: 14px;
+}
+
+.warning-message {
+  padding: 12px;
+
+  margin-bottom: 8px;
+
+  border-radius: 8px;
+
+  background: #fffbeb;
+
+  border: 1px solid #fde68a;
+
+  color: #92400e;
+
+  font-size: 14px;
+
+  line-height: 1.5;
+}
+
+.catalog-form {
+  display: flex;
+
+  gap: 8px;
+
+  margin-top: 10px;
+}
+
+.catalog-form input {
+  flex: 1;
+
+  min-width: 0;
+
+  padding: 8px 10px;
+
+  border: 1px solid #d1d5db;
+
+  border-radius: 6px;
+
+  font-size: 14px;
+}
+
+.catalog-btn {
+  padding: 8px 14px;
+
+  border: none;
+
+  border-radius: 6px;
+
+  background: #1e40af;
+
+  color: #fff;
+
+  font-size: 14px;
+
+  cursor: pointer;
+}
+
+.catalog-btn:disabled {
+  opacity: 0.6;
+
+  cursor: not-allowed;
+}
+
+.catalog-note {
+  padding: 10px;
+
+  margin-bottom: 8px;
+
+  border-radius: 8px;
+
+  background: #f0fdf4;
+
+  border: 1px solid #bbf7d0;
+
+  color: #166534;
 
   font-size: 14px;
 }

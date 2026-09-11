@@ -1,15 +1,11 @@
 import json
-import os
 
-from google import genai
 from google.genai import types
 
+from app.core.gemini import MODEL_NAME, get_genai_client
 
-client = genai.Client(
-    api_key=os.getenv("GEMINI_API_KEY")
-)
 
-MODEL_NAME = "gemini-3.6-flash"
+client = get_genai_client()
 
 
 VIEW_INSTRUCTIONS = {

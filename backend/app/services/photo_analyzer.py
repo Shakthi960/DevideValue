@@ -1,11 +1,28 @@
-import cv2
-import numpy as np
 from app.services.phone_detector import (
     detect_phone
 )
 
 
 def analyze_image(image_bytes: bytes):
+    # Lazy-import so the app can boot on deployments
+    # that do not include opencv (e.g. Vercel).
+    try:
+        import cv2
+        import numpy as np
+    except ImportError:
+        return {
+            "width": None,
+            "height": None,
+            "brightness": None,
+            "blur_score": None,
+            "resolution_score": None,
+            "quality_score": 0,
+            "quality_grade": "Unavailable",
+            "phone_detection": detect_phone(
+                image_bytes
+            ),
+        }
+
     array = np.frombuffer(image_bytes, dtype=np.uint8)
     image = cv2.imdecode(array, cv2.IMREAD_COLOR)
 

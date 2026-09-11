@@ -174,6 +174,44 @@ class TestConditionGrade:
         assert get_condition_grade(50) == "D"
 
 
+class TestPhotoConditionMetrics:
+    def test_perfect_score_full_multiplier(self):
+        from app.services.valuation import (
+            photo_condition_metrics,
+        )
+
+        multiplier, grade = photo_condition_metrics(100)
+        assert multiplier == 1.00
+        assert grade == "A+"
+
+    def test_zero_score_floor_multiplier(self):
+        from app.services.valuation import (
+            photo_condition_metrics,
+        )
+
+        multiplier, grade = photo_condition_metrics(0)
+        assert multiplier == 0.60
+        assert grade == "D"
+
+    def test_score_clamped_below_zero(self):
+        from app.services.valuation import (
+            photo_condition_metrics,
+        )
+
+        multiplier, grade = photo_condition_metrics(-50)
+        assert multiplier == 0.60
+        assert grade == "D"
+
+    def test_mid_score(self):
+        from app.services.valuation import (
+            photo_condition_metrics,
+        )
+
+        multiplier, grade = photo_condition_metrics(85)
+        assert multiplier == pytest.approx(0.94)
+        assert grade == "A"
+
+
 # ============================================================
 # FULL VALUATION
 # ============================================================

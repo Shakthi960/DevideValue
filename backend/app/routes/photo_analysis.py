@@ -1,3 +1,5 @@
+import json
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
@@ -13,8 +15,10 @@ from app.models.device import Device
 from app.services.photo_analyzer import analyze_image
 from app.services.condition_analyzer import analyze_condition
 from app.services.valuation import (
+    EXCHANGE_RATE,
     get_market_price,
     calculate_condition_score,
+    photo_condition_metrics,
 )
 
 from app.schemas.inspection_answer import (
@@ -374,6 +378,62 @@ def analyze_photos(
 # COMBINED PHOTO VALUATION
 # ============================================================
 
+def get_market_price_for_device(
+    device
+):
+    try:
+        return get_market_price(
+            brand=device.brand,
+            model=device.model,
+            storage=device.storage
+        )
+    except ValueError as error:
+        raise HTTPException(
+            status_code=422,
+            detail=str(error)
+        )
+
+
+def extract_ai_condition_score(
+    analysis
+):
+    physical_condition_ai = (
+        analysis["physical_condition_ai"]
+    )
+
+    return (
+        physical_condition_ai.get(
+            "effective_condition_score"
+        )
+        or physical_condition_ai.get(
+            "condition_score"
+        )
+    )
+
+
+def finalize_prices(
+    inspection,
+    market_price,
+    condition_multiplier,
+    db
+):
+    resale_price = round(
+        market_price * condition_multiplier
+    )
+
+    exchange_price = round(
+        resale_price * EXCHANGE_RATE
+    )
+
+    inspection.estimated_resale_price = resale_price
+    inspection.estimated_exchange_price = exchange_price
+    inspection.status = "valuated"
+
+    db.commit()
+
+    return resale_price, exchange_price
+
+
 @router.post("/{inspection_code}/valuate")
 def photo_valuation(
     inspection_code: str,
@@ -422,17 +482,8 @@ def photo_valuation(
         db
     )
 
-    physical_condition_ai = (
-        analysis["physical_condition_ai"]
-    )
-
     physical_condition_score = (
-        physical_condition_ai.get(
-            "effective_condition_score"
-        )
-        or physical_condition_ai.get(
-            "condition_score"
-        )
+        extract_ai_condition_score(analysis)
     )
 
     if physical_condition_score is None:
@@ -445,67 +496,33 @@ def photo_valuation(
     # 3. ML market price
     # ---------------------------------------------------------
 
-    try:
-        market_price, new_price_inr, price_source = (
-            get_market_price(
-                brand=device.brand,
-                model=device.model,
-                storage=device.storage
-            )
-        )
-    except ValueError as error:
-        raise HTTPException(
-            status_code=422,
-            detail=str(error)
-        )
-
-    # ---------------------------------------------------------
-    # 4. Condition multiplier (same range as valuation.py)
-    # ---------------------------------------------------------
-
-    condition_multiplier = 0.60 + (
-        max(
-            0.0,
-            min(100.0, physical_condition_score)
-        )
-        / 100.0
-    ) * 0.40
-
-    if physical_condition_score >= 90:
-        condition_grade = "A+"
-    elif physical_condition_score >= 80:
-        condition_grade = "A"
-    elif physical_condition_score >= 70:
-        condition_grade = "B"
-    elif physical_condition_score >= 60:
-        condition_grade = "C"
-    else:
-        condition_grade = "D"
-
-    # ---------------------------------------------------------
-    # 5. Final prices
-    # ---------------------------------------------------------
-
-    resale_price = round(
-        market_price * condition_multiplier
-    )
-
-    exchange_price = round(
-        resale_price * 0.88
+    market_price, new_price_inr, price_source = (
+        get_market_price_for_device(device)
     )
 
     # ---------------------------------------------------------
-    # 6. Persist prices
+    # 4. Condition multiplier + grade
     # ---------------------------------------------------------
 
-    inspection.estimated_resale_price = resale_price
-    inspection.estimated_exchange_price = exchange_price
-    inspection.status = "valuated"
-
-    db.commit()
+    condition_multiplier, condition_grade = (
+        photo_condition_metrics(
+            physical_condition_score
+        )
+    )
 
     # ---------------------------------------------------------
-    # 7. Response
+    # 5. Final prices + persist
+    # ---------------------------------------------------------
+
+    resale_price, exchange_price = finalize_prices(
+        inspection,
+        market_price,
+        condition_multiplier,
+        db
+    )
+
+    # ---------------------------------------------------------
+    # 6. Response
     # ---------------------------------------------------------
 
     return {
@@ -613,17 +630,8 @@ def exchange_inspection_valuation(
         db
     )
 
-    ai_condition_ai = (
-        analysis["physical_condition_ai"]
-    )
-
     ai_condition_score = (
-        ai_condition_ai.get(
-            "effective_condition_score"
-        )
-        or ai_condition_ai.get(
-            "condition_score"
-        )
+        extract_ai_condition_score(analysis)
     )
 
     if ai_condition_score is None:
@@ -641,67 +649,33 @@ def exchange_inspection_valuation(
     # 6. ML market price
     # ---------------------------------------------------------
 
-    try:
-        market_price, new_price_inr, price_source = (
-            get_market_price(
-                brand=device.brand,
-                model=device.model,
-                storage=device.storage
-            )
-        )
-    except ValueError as error:
-        raise HTTPException(
-            status_code=422,
-            detail=str(error)
-        )
+    market_price, new_price_inr, price_source = (
+        get_market_price_for_device(device)
+    )
 
     # ---------------------------------------------------------
     # 7. Condition multiplier + grade
     # ---------------------------------------------------------
 
-    condition_multiplier = 0.60 + (
-        max(
-            0.0,
-            min(100.0, combined_condition_score)
+    condition_multiplier, condition_grade = (
+        photo_condition_metrics(
+            combined_condition_score
         )
-        / 100.0
-    ) * 0.40
-
-    if combined_condition_score >= 90:
-        condition_grade = "A+"
-    elif combined_condition_score >= 80:
-        condition_grade = "A"
-    elif combined_condition_score >= 70:
-        condition_grade = "B"
-    elif combined_condition_score >= 60:
-        condition_grade = "C"
-    else:
-        condition_grade = "D"
-
-    # ---------------------------------------------------------
-    # 8. Final prices
-    # ---------------------------------------------------------
-
-    resale_price = round(
-        market_price * condition_multiplier
-    )
-
-    exchange_price = round(
-        resale_price * 0.88
     )
 
     # ---------------------------------------------------------
-    # 9. Persist
+    # 8. Final prices + persist
     # ---------------------------------------------------------
 
-    inspection.estimated_resale_price = resale_price
-    inspection.estimated_exchange_price = exchange_price
-    inspection.status = "valuated"
-
-    db.commit()
+    resale_price, exchange_price = finalize_prices(
+        inspection,
+        market_price,
+        condition_multiplier,
+        db
+    )
 
     # ---------------------------------------------------------
-    # 10. Response
+    # 9. Response
     # ---------------------------------------------------------
 
     return {
@@ -724,4 +698,202 @@ def exchange_inspection_valuation(
         "ai_condition_score": ai_condition_score,
 
         "valuation_type": "Complete Exchange Inspection",
+    }
+
+
+# ============================================================
+# COMBINED FULL INSPECTION
+# (questionnaire + AI photos + diagnostics -> single value)
+# ============================================================
+
+def get_diagnostics_block(
+    inspection
+):
+    if (
+        inspection.working is None
+        and inspection.diagnostics_score is None
+    ):
+        return None
+
+    report = None
+
+    if inspection.diagnostics_report:
+        try:
+            report = json.loads(
+                inspection.diagnostics_report
+            )
+        except Exception:
+            report = None
+
+    return {
+        "working": inspection.working,
+        "diagnostics_score": (
+            inspection.diagnostics_score
+        ),
+        "report": report,
+    }
+
+
+@router.post("/{inspection_code}/complete-valuate")
+def complete_inspection_valuation(
+    inspection_code: str,
+    data: InspectionAnswersRequest,
+    db: Session = Depends(get_db)
+):
+    # ---------------------------------------------------------
+    # 1. Find inspection + device
+    # ---------------------------------------------------------
+
+    inspection = (
+        db.query(Inspection)
+        .filter(
+            Inspection.inspection_code
+            == inspection_code
+        )
+        .first()
+    )
+
+    if not inspection:
+        raise HTTPException(
+            status_code=404,
+            detail="Inspection not found"
+        )
+
+    device = (
+        db.query(Device)
+        .filter(
+            Device.id
+            == inspection.device_id
+        )
+        .first()
+    )
+
+    if not device:
+        raise HTTPException(
+            status_code=404,
+            detail="Device not found"
+        )
+
+    # ---------------------------------------------------------
+    # 2. Questionnaire condition score
+    # ---------------------------------------------------------
+
+    answer_dict = {
+        item.question_key: item.answer_value
+        for item in data.answers
+    }
+
+    questionnaire_score = calculate_condition_score(
+        answer_dict
+    )
+
+    for item in data.answers:
+        db.add(
+            InspectionAnswer(
+                inspection_id=inspection.id,
+                question_key=item.question_key,
+                answer_value=item.answer_value
+            )
+        )
+
+    # ---------------------------------------------------------
+    # 3. Diagnostics (already submitted by the subject phone)
+    # ---------------------------------------------------------
+
+    diagnostics = get_diagnostics_block(
+        inspection
+    )
+
+    if diagnostics is None:
+        raise HTTPException(
+            status_code=422,
+            detail=(
+                "Diagnostics have not been submitted yet. "
+                "Complete the diagnostics step before valuing."
+            )
+        )
+
+    # ---------------------------------------------------------
+    # 4. Run photo analysis (AI physical condition)
+    # ---------------------------------------------------------
+
+    analysis = analyze_photos(
+        inspection_code,
+        db
+    )
+
+    ai_condition_score = (
+        extract_ai_condition_score(analysis)
+    )
+
+    if ai_condition_score is None:
+        ai_condition_score = questionnaire_score
+
+    # ---------------------------------------------------------
+    # 5. Combine questionnaire + AI photo signals (50/50)
+    #    Diagnostics are included in the result for display
+    #    but are not yet blended into the price formula.
+    # ---------------------------------------------------------
+
+    combined_condition_score = round(
+        (questionnaire_score + ai_condition_score) / 2
+    )
+
+    # ---------------------------------------------------------
+    # 6. ML market price
+    # ---------------------------------------------------------
+
+    market_price, new_price_inr, price_source = (
+        get_market_price_for_device(device)
+    )
+
+    # ---------------------------------------------------------
+    # 7. Condition multiplier + grade
+    # ---------------------------------------------------------
+
+    condition_multiplier, condition_grade = (
+        photo_condition_metrics(
+            combined_condition_score
+        )
+    )
+
+    # ---------------------------------------------------------
+    # 8. Final prices + persist
+    # ---------------------------------------------------------
+
+    resale_price, exchange_price = finalize_prices(
+        inspection,
+        market_price,
+        condition_multiplier,
+        db
+    )
+
+    # ---------------------------------------------------------
+    # 9. Response
+    # ---------------------------------------------------------
+
+    return {
+        "inspection_code": inspection_code,
+
+        "market_price": market_price,
+        "new_price_inr": new_price_inr,
+        "price_source": price_source,
+        "resale_price": resale_price,
+        "exchange_price": exchange_price,
+
+        "condition_score": combined_condition_score,
+        "condition_grade": condition_grade,
+        "condition_multiplier": round(
+            condition_multiplier,
+            4
+        ),
+
+        "questionnaire_score": questionnaire_score,
+        "ai_condition_score": ai_condition_score,
+        "diagnostics": diagnostics,
+
+        "overall_photo_quality":
+            analysis["overall_photo_quality"],
+
+        "valuation_type": "Complete Full Inspection",
     }

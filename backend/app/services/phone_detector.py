@@ -1,15 +1,60 @@
-import cv2
-import numpy as np
-
-from ultralytics import YOLO
-
-
-# Load once when FastAPI starts.
-# This prevents loading the model for every photo.
-model = YOLO("yolo26n.pt")
-
-
 PHONE_CLASS_NAME = "cell phone"
+
+# Lazy-loaded heavy deps so the app can boot on deployments
+# that do not include torch / ultralytics / opencv (e.g. Vercel).
+_vision_cv2 = None
+_vision_np = None
+_vision_cv2_checked = False
+
+_model = None
+_model_error = None
+
+
+def _ensure_vision():
+    global _vision_cv2, _vision_np, _vision_cv2_checked
+
+    if _vision_cv2_checked:
+        return _vision_cv2 is not None
+
+    _vision_cv2_checked = True
+
+    try:
+        import cv2
+        import numpy
+
+        _vision_cv2 = cv2
+        _vision_np = numpy
+        return True
+    except ImportError:
+        return False
+
+
+def _load_yolo():
+    global _model, _model_error
+
+    if _model is not None or _model_error is not None:
+        return _model is not None
+
+    try:
+        from ultralytics import YOLO
+
+        _model = YOLO("yolo26n.pt")
+        return True
+    except Exception as exc:
+        _model_error = str(exc)
+        return False
+
+
+def _degraded_response(message="Phone detection is unavailable in this deployment."):
+    return {
+        "detected": False,
+        "confidence": 0,
+        "bounding_box": None,
+        "coverage_percent": 0,
+        "position": "not_detected",
+        "integrity_score": 0,
+        "message": message,
+    }
 
 
 def detect_phone(image_bytes: bytes):
@@ -37,6 +82,15 @@ def detect_phone(image_bytes: bytes):
             Basic capture-integrity score.
     """
 
+    if not _ensure_vision():
+        return _degraded_response()
+
+    if not _load_yolo():
+        return _degraded_response()
+
+    cv2 = _vision_cv2
+    np = _vision_np
+
     array = np.frombuffer(
         image_bytes,
         dtype=np.uint8
@@ -54,7 +108,7 @@ def detect_phone(image_bytes: bytes):
 
     height, width = image.shape[:2]
 
-    results = model.predict(
+    results = _model.predict(
         source=image,
         conf=0.25,
         imgsz=640,

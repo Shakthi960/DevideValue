@@ -1,8 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import "./PhotoInspection.css";
 import SelectOrCustom, { CUSTOM } from "./components/SelectOrCustom";
-
-const API_URL = "http://127.0.0.1:8000";
+import LoadingSpinner from "./components/LoadingSpinner";
+import logo from "./logo.png";
+import {
+  formatINR,
+  getApiUrl,
+  isEstimatedPriceSource,
+} from "./config";
 
 type PhotoType =
   | "front"
@@ -67,29 +72,11 @@ function PhotoInspection({ onBack }: Props) {
   const [models, setModels] = useState<string[]>([]);
   const [variants, setVariants] = useState<any[]>([]);
 
+  const [customBrand, setCustomBrand] = useState("");
   const [customModel, setCustomModel] = useState("");
   const [customStorage, setCustomStorage] = useState("");
 
   const [catalogLoading, setCatalogLoading] = useState(false);
-
-  const loadBrands = async () => {
-    try {
-      const response = await fetch(
-        `${API_URL}/api/device-catalog/brands`
-      );
-
-      if (!response.ok) {
-        throw new Error("Unable to load brands.");
-      }
-
-      const data = await response.json();
-
-      setBrands(Array.isArray(data?.items) ? data.items : []);
-    } catch (err) {
-      console.error("Brand loading error:", err);
-      setError("Unable to load device brands.");
-    }
-  };
 
   const loadModels = async (selectedBrand: string) => {
     if (!selectedBrand) {
@@ -101,9 +88,9 @@ function PhotoInspection({ onBack }: Props) {
       setCatalogLoading(true);
 
       const response = await fetch(
-        `${API_URL}/api/device-catalog/brands/${encodeURIComponent(
+        getApiUrl(`/api/device-catalog/brands/${encodeURIComponent(
           selectedBrand
-        )}/models`
+        )}/models`)
       );
 
       if (!response.ok) {
@@ -134,7 +121,7 @@ function PhotoInspection({ onBack }: Props) {
       setCatalogLoading(true);
 
       const response = await fetch(
-        `${API_URL}/api/device-catalog/models/` +
+        getApiUrl(`/api/device-catalog/models/`) +
           `${encodeURIComponent(selectedBrand)}/` +
           `${encodeURIComponent(selectedModel)}/variants`
       );
@@ -173,6 +160,17 @@ function PhotoInspection({ onBack }: Props) {
 
   const [cameraReady, setCameraReady] = useState(false);
   const [error, setError] = useState("");
+  const [warning, setWarning] = useState("");
+
+  const [catalogBusy, setCatalogBusy] = useState(false);
+  const [catalogNote, setCatalogNote] = useState("");
+  const [priceInput, setPriceInput] = useState("");
+
+  const getEffectiveDevice = () => ({
+    brand: brand === CUSTOM ? customBrand.trim() : brand,
+    model: model === CUSTOM ? customModel.trim() : model,
+    storage: storage === CUSTOM ? customStorage.trim() : storage,
+  });
 
   const [analysisLoading, setAnalysisLoading] =
     useState(false);
@@ -247,12 +245,26 @@ function PhotoInspection({ onBack }: Props) {
     }
   };
 
+  const fetchBrands = async (): Promise<string[]> => {
+    const response = await fetch(
+      getApiUrl(`/api/device-catalog/brands`)
+    );
+    const data = await response.json();
+    return Array.isArray(data?.items) ? data.items : [];
+  };
+
   useEffect(() => {
-    loadBrands();
+    fetchBrands()
+      .then(setBrands)
+      .catch(() => {
+        setError("Unable to load device catalog.");
+      });
   }, []);
 
   useEffect(() => {
     if (phase === "photos") {
+      // startCamera resets the camera state synchronously on purpose.
+      // oxlint-disable-next-line react/set-state-in-effect
       startCamera();
     } else {
       stopCamera();
@@ -263,15 +275,96 @@ function PhotoInspection({ onBack }: Props) {
     };
   }, [phase, currentIndex]);
 
+  const handleAddToCatalog = async () => {
+    const { brand: effBrand, model: effModel, storage: effStorage } =
+      getEffectiveDevice();
+
+    if (!effBrand || !effModel || !effStorage) return;
+
+    setCatalogBusy(true);
+    setCatalogNote("");
+
+    try {
+      const response = await fetch(
+        getApiUrl(`/api/device-catalog/devices`),
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            brand: effBrand,
+            model: effModel,
+            storage: effStorage,
+            new_price_inr: priceInput
+              ? parseInt(priceInput, 10)
+              : null,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setCatalogNote(
+          data?.detail || "Unable to add the device."
+        );
+        return;
+      }
+
+      setCatalogNote(
+        `Added ${data.brand} ${data.model} (${data.storage}) ` +
+          "to the catalog for future valuations."
+      );
+      setWarning("");
+      setPriceInput("");
+      loadModels(effBrand);
+      fetchBrands()
+        .then(setBrands)
+        .catch(() => {});
+
+      const refreshed = await fetch(
+        getApiUrl(
+          `/api/device-prices?${new URLSearchParams({
+            brand: effBrand,
+            model: effModel,
+            storage: effStorage,
+          }).toString()}`
+        )
+      )
+        .then((r) => (r.ok ? r.json() : null))
+        .catch(() => null);
+
+      if (
+        refreshed?.resolution === "exists" &&
+        refreshed?.new_price_inr
+      ) {
+        setWarning("");
+        setCatalogNote(
+          `Added ${data.brand} ${data.model} (${data.storage}) ` +
+            "to the catalog. Price confirmed: about " +
+            `${formatINR(Number(refreshed.new_price_inr))}.`
+        );
+      }
+    } catch {
+      setCatalogNote(
+        "Unable to reach the server to add this device."
+      );
+    } finally {
+      setCatalogBusy(false);
+    }
+  };
+
   const createInspection = async () => {
     setError("");
 
-    const effectiveModel =
-      model === CUSTOM ? customModel.trim() : model;
-    const effectiveStorage =
-      storage === CUSTOM ? customStorage.trim() : storage;
+    const {
+      brand: effectiveBrand,
+      model: effectiveModel,
+      storage: effectiveStorage,
+    } = getEffectiveDevice();
 
-    if (!brand || !effectiveModel || !effectiveStorage) {
+    if (!effectiveBrand || !effectiveModel || !effectiveStorage) {
       setError("Please complete all device details.");
       return;
     }
@@ -280,13 +373,13 @@ function PhotoInspection({ onBack }: Props) {
 
     try {
       const params = new URLSearchParams({
-        brand,
+        brand: effectiveBrand,
         model: effectiveModel,
         storage: effectiveStorage,
       });
 
       const checkResponse = await fetch(
-        `${API_URL}/api/device-prices?${params.toString()}`
+        getApiUrl(`/api/device-prices?${params.toString()}`)
       );
 
       const checkData = checkResponse.ok
@@ -294,11 +387,10 @@ function PhotoInspection({ onBack }: Props) {
         : null;
 
       if (checkData?.resolution === "not_found") {
-        setError(
+        setWarning(
           `Couldn't verify "${effectiveModel}" as a real phone. ` +
-            "Check the spelling or pick the closest model from the list."
+            "We'll use a closest-match estimate."
         );
-        return;
       }
     } catch {
       // Verification unavailable - allow fallback path.
@@ -310,14 +402,14 @@ function PhotoInspection({ onBack }: Props) {
 
     try {
       const response = await fetch(
-        `${API_URL}/api/inspections`,
+        getApiUrl(`/api/inspections`),
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            brand,
+            brand: effectiveBrand,
             model: effectiveModel,
             storage: effectiveStorage,
             inspection_type: "photo_inspection",
@@ -409,7 +501,7 @@ function PhotoInspection({ onBack }: Props) {
       );
 
       const url =
-        `${API_URL}/api/inspections/` +
+        getApiUrl(`/api/inspections/`) +
         `${inspectionCode}/photos` +
         `?photo_type=${currentPhoto.type}`;
 
@@ -481,7 +573,7 @@ function PhotoInspection({ onBack }: Props) {
 
     try {
       const response = await fetch(
-        `${API_URL}/api/inspections/${inspectionCode}/analyze`,
+        getApiUrl(`/api/inspections/${inspectionCode}/analyze`),
         {
           method: "POST",
         }
@@ -524,7 +616,7 @@ function PhotoInspection({ onBack }: Props) {
 
     try {
       const response = await fetch(
-        `${API_URL}/api/inspections/${inspectionCode}/valuate`,
+        getApiUrl(`/api/inspections/${inspectionCode}/valuate`),
         {
           method: "POST",
         }
@@ -570,6 +662,7 @@ function PhotoInspection({ onBack }: Props) {
           </button>
 
           <div className="photo-logo">
+            <img src={logo} alt="DeviceValue" className="brand-logo" />
             Device<span>Value</span>
           </div>
 
@@ -597,34 +690,37 @@ function PhotoInspection({ onBack }: Props) {
             <h2>Device details</h2>
 
             <div className="photo-form-group">
-              <label>Brand</label>
+<label>Brand</label>
 
-              <select
-                value={brand}
-                onChange={(e) => {
-                  const selectedBrand = e.target.value;
+<SelectOrCustom
+  value={brand}
+  onValueChange={(value) => {
+    setBrand(value);
+    setModel("");
+    setStorage("");
+    setModels([]);
+    setVariants([]);
+    setCustomModel("");
+    setCustomStorage("");
+    setWarning("");
+    setCatalogNote("");
 
-                  setBrand(selectedBrand);
-                  setModel("");
-                  setStorage("");
-                  setModels([]);
-                  setVariants([]);
-                  setCustomModel("");
-                  setCustomStorage("");
-
-                  if (selectedBrand) {
-                    loadModels(selectedBrand);
-                  }
-                }}
-              >
-                <option value="">Select brand</option>
-
-                {brands.map((item) => (
-                  <option key={item} value={item}>
-                    {item}
-                  </option>
-                ))}
-              </select>
+    if (value === CUSTOM) {
+      setCatalogLoading(false);
+    } else if (value) {
+      loadModels(value);
+    }
+  }}
+  customValue={customBrand}
+  onCustomChange={(value) => {
+    setCustomBrand(value);
+    setWarning("");
+    setCatalogNote("");
+  }}
+  options={brands}
+  placeholder="Select brand"
+  customPlaceholder="Type your brand, e.g. Nothing"
+/>
             </div>
 
             <div className="photo-form-group">
@@ -637,6 +733,8 @@ function PhotoInspection({ onBack }: Props) {
                   setModel(value);
                   setStorage("");
                   setCustomStorage("");
+                  setWarning("");
+                  setCatalogNote("");
 
                   if (value === CUSTOM) {
                     setVariants([]);
@@ -645,9 +743,11 @@ function PhotoInspection({ onBack }: Props) {
                   }
                 }}
                 customValue={customModel}
-                onCustomChange={(value) =>
-                  setCustomModel(value)
-                }
+                onCustomChange={(value) => {
+                  setCustomModel(value);
+                  setWarning("");
+                  setCatalogNote("");
+                }}
                 options={models}
                 placeholder={
                   !brand
@@ -666,13 +766,17 @@ function PhotoInspection({ onBack }: Props) {
               <SelectOrCustom
                 value={storage}
                 disabled={!model || catalogLoading}
-                onValueChange={(value) =>
-                  setStorage(value)
-                }
+                onValueChange={(value) => {
+                  setStorage(value);
+                  setWarning("");
+                  setCatalogNote("");
+                }}
                 customValue={customStorage}
-                onCustomChange={(value) =>
-                  setCustomStorage(value)
-                }
+                onCustomChange={(value) => {
+                  setCustomStorage(value);
+                  setWarning("");
+                  setCatalogNote("");
+                }}
                 options={variants.map((v: any) => v.variant_name || v.storage || "")}
                 placeholder={
                   !model
@@ -689,6 +793,41 @@ function PhotoInspection({ onBack }: Props) {
             {error && (
               <div className="photo-error">
                 {error}
+              </div>
+            )}
+
+            {warning && (
+              <div className="photo-warning">
+                <p>{warning}</p>
+
+                <div className="catalog-form">
+                  <input
+                    type="number"
+                    min="0"
+                    placeholder="Estimated price in ₹ (optional)"
+                    value={priceInput}
+                    onChange={(e) =>
+                      setPriceInput(e.target.value)
+                    }
+                    disabled={catalogBusy}
+                  />
+
+                  <button
+                    className="catalog-btn"
+                    onClick={handleAddToCatalog}
+                    disabled={catalogBusy}
+                  >
+                    {catalogBusy
+                      ? "Adding..."
+                      : "Add to catalog"}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {catalogNote && (
+              <div className="catalog-note">
+                {catalogNote}
               </div>
             )}
 
@@ -727,6 +866,7 @@ function PhotoInspection({ onBack }: Props) {
           </button>
 
           <div className="photo-logo">
+            <img src={logo} alt="DeviceValue" className="brand-logo" />
             Device<span>Value</span>
           </div>
 
@@ -794,10 +934,10 @@ function PhotoInspection({ onBack }: Props) {
 
               {!cameraReady && (
                 <div className="camera-loading">
-                  <div className="camera-loading-icon">
-                    📷
-                  </div>
-                  <span>Starting camera...</span>
+                  <LoadingSpinner
+                    size="md"
+                    label="Starting camera..."
+                  />
                 </div>
               )}
             </div>
@@ -816,6 +956,12 @@ function PhotoInspection({ onBack }: Props) {
             {error && (
               <div className="photo-error">
                 {error}
+              </div>
+            )}
+
+            {warning && (
+              <div className="photo-warning">
+                {warning}
               </div>
             )}
 
@@ -855,11 +1001,22 @@ function PhotoInspection({ onBack }: Props) {
         </button>
 
         <div className="photo-logo">
+          <img src={logo} alt="DeviceValue" className="brand-logo" />
           Device<span>Value</span>
         </div>
       </header>
 
       <main className="complete-page">
+        {(analysisLoading || valuationLoading) && (
+          <LoadingSpinner
+            overlay
+            label={
+              analysisLoading
+                ? "Analyzing photos..."
+                : "Valuing your device..."
+            }
+          />
+        )}
         <div className="complete-card">
           <div className="complete-icon">✓</div>
 
@@ -920,6 +1077,12 @@ function PhotoInspection({ onBack }: Props) {
           {error && (
             <div className="photo-error">
               {error}
+            </div>
+          )}
+
+          {warning && (
+            <div className="photo-warning">
+              {warning}
             </div>
           )}
 
@@ -1303,6 +1466,21 @@ function PhotoInspection({ onBack }: Props) {
                 {valuationResult.price_source && (
                   <div style={{ color: "#94a3b8", fontSize: "12px" }}>
                     {valuationResult.price_source}
+                  </div>
+                )}
+
+                {isEstimatedPriceSource(
+                  valuationResult.price_source
+                ) && (
+                  <div className="photo-warning">
+                    <strong>
+                      New device — approximate price.
+                    </strong>
+                    <br />
+                    This looks like a recently launched device, so
+                    we couldn't find its exact market price. The
+                    value above is an estimate based on the closest
+                    known model and may differ from the real price.
                   </div>
                 )}
 

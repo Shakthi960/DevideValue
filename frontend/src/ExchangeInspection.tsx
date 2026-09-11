@@ -1,8 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import "./ExchangeInspection.css";
 import SelectOrCustom, { CUSTOM } from "./components/SelectOrCustom";
-
-const API_URL = "http://127.0.0.1:8000";
+import LoadingSpinner from "./components/LoadingSpinner";
+import logo from "./logo.png";
+import {
+  formatINR,
+  getApiUrl,
+  isEstimatedPriceSource,
+} from "./config";
 
 type Phase =
   | "device"
@@ -147,6 +152,7 @@ function ExchangeInspection({ onBack }: Props) {
   const [models, setModels] = useState<string[]>([]);
   const [variants, setVariants] = useState<any[]>([]);
 
+  const [customBrand, setCustomBrand] = useState("");
   const [customModel, setCustomModel] = useState("");
   const [customStorage, setCustomStorage] = useState("");
 
@@ -162,7 +168,17 @@ function ExchangeInspection({ onBack }: Props) {
   const [result, setResult] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [warning, setWarning] = useState("");
+  const [catalogBusy, setCatalogBusy] = useState(false);
+  const [catalogNote, setCatalogNote] = useState("");
+  const [priceInput, setPriceInput] = useState("");
   const [deviceChecking, setDeviceChecking] = useState(false);
+
+  const getEffectiveDevice = () => ({
+    brand: brand === CUSTOM ? customBrand.trim() : brand,
+    model: model === CUSTOM ? customModel.trim() : model,
+    storage: storage === CUSTOM ? customStorage.trim() : storage,
+  });
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -171,20 +187,20 @@ function ExchangeInspection({ onBack }: Props) {
   const currentPhoto = PHOTO_SLOTS[currentIndex];
   const currentQ = QUESTIONS[qIndex];
 
-  const loadBrands = async () => {
-    try {
-      const response = await fetch(
-        `${API_URL}/api/device-catalog/brands`
-      );
-      const data = await response.json();
-      setBrands(Array.isArray(data?.items) ? data.items : []);
-    } catch {
-      setError("Unable to load device catalog.");
-    }
+  const fetchBrands = async (): Promise<string[]> => {
+    const response = await fetch(
+      getApiUrl(`/api/device-catalog/brands`)
+    );
+    const data = await response.json();
+    return Array.isArray(data?.items) ? data.items : [];
   };
 
   useEffect(() => {
-    loadBrands();
+    fetchBrands()
+      .then(setBrands)
+      .catch(() => {
+        setError("Unable to load device catalog.");
+      });
   }, []);
 
   const loadModels = async (selectedBrand: string) => {
@@ -197,9 +213,9 @@ function ExchangeInspection({ onBack }: Props) {
 
     try {
       const response = await fetch(
-        `${API_URL}/api/device-catalog/brands/${encodeURIComponent(
+        getApiUrl(`/api/device-catalog/brands/${encodeURIComponent(
           selectedBrand
-        )}/models`
+        )}/models`)
       );
       const data = await response.json();
       setModels(Array.isArray(data?.items) ? data.items : []);
@@ -219,7 +235,7 @@ function ExchangeInspection({ onBack }: Props) {
 
     try {
       const response = await fetch(
-        `${API_URL}/api/device-catalog/models/` +
+        getApiUrl(`/api/device-catalog/models/`) +
           `${encodeURIComponent(brand)}/` +
           `${encodeURIComponent(selectedModel)}/variants`
       );
@@ -230,13 +246,93 @@ function ExchangeInspection({ onBack }: Props) {
     }
   };
 
-  const startQuestions = async () => {
-    const effectiveModel =
-      model === CUSTOM ? customModel.trim() : model;
-    const effectiveStorage =
-      storage === CUSTOM ? customStorage.trim() : storage;
+  const handleAddToCatalog = async () => {
+    const { brand: effBrand, model: effModel, storage: effStorage } =
+      getEffectiveDevice();
 
-    if (!brand || !effectiveModel || !effectiveStorage) {
+    if (!effBrand || !effModel || !effStorage) return;
+
+    setCatalogBusy(true);
+    setCatalogNote("");
+
+    try {
+      const response = await fetch(
+        getApiUrl(`/api/device-catalog/devices`),
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            brand: effBrand,
+            model: effModel,
+            storage: effStorage,
+            new_price_inr: priceInput
+              ? parseInt(priceInput, 10)
+              : null,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setCatalogNote(
+          data?.detail || "Unable to add the device."
+        );
+        return;
+      }
+
+      setCatalogNote(
+        `Added ${data.brand} ${data.model} (${data.storage}) ` +
+          "to the catalog for future valuations."
+      );
+      setWarning("");
+      setPriceInput("");
+      fetchBrands()
+        .then(setBrands)
+        .catch(() => {});
+
+      const refreshed = await fetch(
+        getApiUrl(
+          `/api/device-prices?${new URLSearchParams({
+            brand: effBrand,
+            model: effModel,
+            storage: effStorage,
+          }).toString()}`
+        )
+      )
+        .then((r) => (r.ok ? r.json() : null))
+        .catch(() => null);
+
+      if (
+        refreshed?.resolution === "exists" &&
+        refreshed?.new_price_inr
+      ) {
+        setWarning("");
+        setCatalogNote(
+          `Added ${data.brand} ${data.model} (${data.storage}) ` +
+            "to the catalog. Price confirmed: about " +
+            `${formatINR(Number(refreshed.new_price_inr))}.`
+        );
+      }
+    } catch {
+      setCatalogNote(
+        "Unable to reach the server to add this device."
+      );
+    } finally {
+      setCatalogBusy(false);
+    }
+  };
+
+  const startQuestions = async () => {
+    const {
+      brand: effectiveBrand,
+      model: effectiveModel,
+      storage: effectiveStorage,
+    } = getEffectiveDevice();
+
+    if (!effectiveBrand || !effectiveModel || !effectiveStorage) {
       setError("Please select a brand, model and variant.");
       return;
     }
@@ -246,13 +342,13 @@ function ExchangeInspection({ onBack }: Props) {
 
     try {
       const params = new URLSearchParams({
-        brand,
+        brand: effectiveBrand,
         model: effectiveModel,
         storage: effectiveStorage,
       });
 
       const checkResponse = await fetch(
-        `${API_URL}/api/device-prices?${params.toString()}`
+        getApiUrl(`/api/device-prices?${params.toString()}`)
       );
 
       const checkData = checkResponse.ok
@@ -260,11 +356,10 @@ function ExchangeInspection({ onBack }: Props) {
         : null;
 
       if (checkData?.resolution === "not_found") {
-        setError(
+        setWarning(
           `Couldn't verify "${effectiveModel}" as a real phone. ` +
-            "Check the spelling or pick the closest model from the list."
+            "We'll use a closest-match estimate."
         );
-        return;
       }
     } catch {
       // Verification unavailable - allow fallback path.
@@ -293,22 +388,14 @@ function ExchangeInspection({ onBack }: Props) {
 
     try {
       const response = await fetch(
-        `${API_URL}/api/inspections`,
+        getApiUrl(`/api/inspections`),
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            brand,
-            model:
-              model === CUSTOM
-                ? customModel.trim()
-                : model,
-            storage:
-              storage === CUSTOM
-                ? customStorage.trim()
-                : storage,
+            ...getEffectiveDevice(),
             inspection_type: "exchange_inspection",
           }),
         }
@@ -426,7 +513,7 @@ function ExchangeInspection({ onBack }: Props) {
       );
 
       const url =
-        `${API_URL}/api/inspections/` +
+        getApiUrl(`/api/inspections/`) +
         `${inspectionCode}/photos` +
         `?photo_type=${currentPhoto.type}`;
 
@@ -491,7 +578,7 @@ function ExchangeInspection({ onBack }: Props) {
       );
 
       const response = await fetch(
-        `${API_URL}/api/inspections/${inspectionCode}/exchange-valuate`,
+        getApiUrl(`/api/inspections/${inspectionCode}/exchange-valuate`),
         {
           method: "POST",
           headers: {
@@ -536,12 +623,14 @@ function ExchangeInspection({ onBack }: Props) {
             ←
           </button>
           <div className="xi-logo">
+            <img src={logo} alt="DeviceValue" className="brand-logo" />
             Device<span>Value</span>
           </div>
           <div />
         </header>
 
         <main className="xi-page">
+          {loading && <LoadingSpinner overlay label="Processing..." />}
           <div className="xi-card">
             <p className="xi-eyebrow">EXCHANGE INSPECTION</p>
             <h1>Select your device.</h1>
@@ -550,22 +639,35 @@ function ExchangeInspection({ onBack }: Props) {
               calculate a final exchange value.
             </p>
 
-            <label className="xi-label">Brand</label>
-            <select
-              className="xi-select"
-              value={brand}
-              onChange={(e) => {
-                setBrand(e.target.value);
-                loadModels(e.target.value);
-              }}
-            >
-              <option value="">Select brand</option>
-              {brands.map((b) => (
-                <option key={b} value={b}>
-                  {b}
-                </option>
-              ))}
-            </select>
+<label className="xi-label">Brand</label>
+<SelectOrCustom
+  className="xi-select"
+  value={brand}
+  onValueChange={(value) => {
+    setBrand(value);
+    setModel("");
+    setStorage("");
+    setModels([]);
+    setVariants([]);
+    setCustomModel("");
+    setCustomStorage("");
+    setWarning("");
+    setCatalogNote("");
+
+    if (value !== "" && value !== CUSTOM) {
+      loadModels(value);
+    }
+  }}
+  customValue={customBrand}
+  onCustomChange={(value) => {
+    setCustomBrand(value);
+    setWarning("");
+    setCatalogNote("");
+  }}
+  options={brands}
+  placeholder="Select brand"
+  customPlaceholder="Type your brand, e.g. Nothing"
+/>
 
             <label className="xi-label">Model</label>
             <SelectOrCustom
@@ -574,6 +676,8 @@ function ExchangeInspection({ onBack }: Props) {
               onValueChange={(value) => {
                 setModel(value);
                 setCustomStorage("");
+                setWarning("");
+                setCatalogNote("");
 
                 if (value === CUSTOM) {
                   setVariants([]);
@@ -583,11 +687,13 @@ function ExchangeInspection({ onBack }: Props) {
                 }
               }}
               customValue={customModel}
-              onCustomChange={(value) =>
-                setCustomModel(value)
-              }
+              onCustomChange={(value) => {
+                setCustomModel(value);
+                setWarning("");
+                setCatalogNote("");
+              }}
               options={models}
-              disabled={!models.length}
+              disabled={!models.length && brand !== CUSTOM}
               placeholder="Select model"
               customPlaceholder="Type your model, e.g. Y200e 5G"
             />
@@ -596,11 +702,17 @@ function ExchangeInspection({ onBack }: Props) {
             <SelectOrCustom
               className="xi-select"
               value={storage}
-              onValueChange={(value) => setStorage(value)}
+              onValueChange={(value) => {
+                setStorage(value);
+                setWarning("");
+                setCatalogNote("");
+              }}
               customValue={customStorage}
-              onCustomChange={(value) =>
-                setCustomStorage(value)
-              }
+              onCustomChange={(value) => {
+                setCustomStorage(value);
+                setWarning("");
+                setCatalogNote("");
+              }}
               options={variants.map((v: any) => v.variant_name || v.storage || "")}
               disabled={
                 model === "" ||
@@ -616,6 +728,41 @@ function ExchangeInspection({ onBack }: Props) {
             />
 
             {error && <div className="xi-error">{error}</div>}
+
+            {warning && (
+              <div className="xi-warning">
+                <p>{warning}</p>
+
+                <div className="catalog-form">
+                  <input
+                    type="number"
+                    min="0"
+                    placeholder="Estimated price in ₹ (optional)"
+                    value={priceInput}
+                    onChange={(e) =>
+                      setPriceInput(e.target.value)
+                    }
+                    disabled={catalogBusy}
+                  />
+
+                  <button
+                    className="catalog-btn"
+                    onClick={handleAddToCatalog}
+                    disabled={catalogBusy}
+                  >
+                    {catalogBusy
+                      ? "Adding..."
+                      : "Add to catalog"}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {catalogNote && (
+              <div className="catalog-note">
+                {catalogNote}
+              </div>
+            )}
 
             <button
               className="xi-primary-btn"
@@ -652,6 +799,7 @@ function ExchangeInspection({ onBack }: Props) {
             ←
           </button>
           <div className="xi-logo">
+            <img src={logo} alt="DeviceValue" className="brand-logo" />
             Device<span>Value</span>
           </div>
           <div className="xi-progress">
@@ -660,6 +808,7 @@ function ExchangeInspection({ onBack }: Props) {
         </header>
 
         <main className="xi-question-page">
+          {loading && <LoadingSpinner overlay label="Processing..." />}
           <div className="xi-progress-bar">
             <div
               className="xi-progress-fill"
@@ -724,12 +873,14 @@ function ExchangeInspection({ onBack }: Props) {
             ←
           </button>
           <div className="xi-logo">
+            <img src={logo} alt="DeviceValue" className="brand-logo" />
             Device<span>Value</span>
           </div>
           <div>{Object.keys(photos).length}/6</div>
         </header>
 
         <main className="xi-camera-page">
+          {loading && <LoadingSpinner overlay label="Processing..." />}
           <div className="xi-camera-card">
             <p className="xi-eyebrow">STEP {currentIndex + 1} OF 6</p>
             <h1>{currentPhoto.title} view</h1>
@@ -809,6 +960,10 @@ function ExchangeInspection({ onBack }: Props) {
 
             {error && <div className="xi-error">{error}</div>}
 
+            {warning && (
+              <div className="xi-warning">{warning}</div>
+            )}
+
             {allPhotosCaptured && (
               <button
                 className="xi-submit-btn"
@@ -837,12 +992,14 @@ function ExchangeInspection({ onBack }: Props) {
           ←
         </button>
         <div className="xi-logo">
+          <img src={logo} alt="DeviceValue" className="brand-logo" />
           Device<span>Value</span>
         </div>
         <div />
       </header>
 
       <main className="xi-page">
+        {loading && <LoadingSpinner overlay label="Valuing your device..." />}
         <div className="xi-result">
           <p className="xi-eyebrow">EXCHANGE VALUATION COMPLETE</p>
 
@@ -893,6 +1050,18 @@ function ExchangeInspection({ onBack }: Props) {
               {result?.price_source && (
                 <div className="xi-result-detail-small">
                   {result.price_source}
+                </div>
+              )}
+              {isEstimatedPriceSource(result?.price_source) && (
+                <div className="xi-warning">
+                  <strong>
+                    New device — approximate price.
+                  </strong>
+                  <br />
+                  This looks like a recently launched device, so
+                  we couldn't find its exact market price. The
+                  value above is an estimate based on the closest
+                  known model and may differ from the real price.
                 </div>
               )}
               <div>

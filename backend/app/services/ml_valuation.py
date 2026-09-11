@@ -1,5 +1,10 @@
 from ml.price_predictor import predict_price_with_details
 
+from app.services.valuation import (
+    EXCHANGE_RATE,
+    get_condition_grade,
+)
+
 
 def calculate_ml_valuation(
     device_data: dict,
@@ -35,18 +40,9 @@ def calculate_ml_valuation(
     resale_price = base_price * condition_multiplier
 
     # Exchange offers are normally lower than direct resale.
-    exchange_price = resale_price * 0.88
+    exchange_price = resale_price * EXCHANGE_RATE
 
-    if condition_score >= 95:
-        grade = "A+"
-    elif condition_score >= 90:
-        grade = "A"
-    elif condition_score >= 80:
-        grade = "B"
-    elif condition_score >= 70:
-        grade = "C"
-    else:
-        grade = "D"
+    grade = get_condition_grade(condition_score)
 
     return {
         "base_market_price": round(base_price, 2),

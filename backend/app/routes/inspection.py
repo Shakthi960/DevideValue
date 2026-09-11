@@ -1,3 +1,4 @@
+import json
 import random
 import string
 from datetime import datetime
@@ -10,10 +11,16 @@ from app.core.database import get_db
 from app.models.device import Device
 from app.models.inspection import Inspection
 from app.models.inspection_answer import InspectionAnswer
+from app.models.inspection_photo import InspectionPhoto
 
 from app.schemas.inspection import (
+    DiagnosticsRequest,
+    DiagnosticsResponse,
     InspectionCreate,
-    InspectionResponse
+    InspectionResponse,
+    InspectionStatusResponse,
+    LinkInspectionRequest,
+    LinkInspectionResponse,
 )
 
 from app.schemas.inspection_answer import (
@@ -55,6 +62,26 @@ def generate_inspection_code():
     )
 
 
+def generate_link_code(db: Session) -> str:
+
+    for _ in range(20):
+
+        code = f"{random.randint(0, 999999):06d}"
+
+        exists = (
+            db.query(Inspection.id)
+            .filter(
+                Inspection.link_code == code
+            )
+            .first()
+        )
+
+        if not exists:
+            return code
+
+    return f"{random.randint(0, 999999):06d}"
+
+
 # ============================================================
 # CREATE INSPECTION
 # ============================================================
@@ -87,6 +114,7 @@ def create_inspection(
         inspection_code=inspection_code,
         device_id=device.id,
         inspection_type=data.inspection_type,
+        link_code=generate_link_code(db),
         status="created"
     )
 
@@ -98,6 +126,7 @@ def create_inspection(
 
     return InspectionResponse(
         inspection_code=inspection.inspection_code,
+        link_code=inspection.link_code,
         brand=device.brand,
         model=device.model,
         storage=device.storage,
@@ -105,6 +134,242 @@ def create_inspection(
         status=inspection.status,
         estimated_resale_price=None,
         estimated_exchange_price=None
+    )
+
+
+# ============================================================
+# INSPECTION STATUS
+# ============================================================
+
+def get_inspection_record(
+    inspection_code: str,
+    db: Session
+):
+    inspection = (
+        db.query(Inspection)
+        .filter(
+            Inspection.inspection_code
+            == inspection_code
+        )
+        .first()
+    )
+
+    if not inspection:
+        raise HTTPException(
+            status_code=404,
+            detail="Inspection not found"
+        )
+
+    return inspection
+
+
+def get_device_record(
+    inspection: Inspection,
+    db: Session
+):
+    device = (
+        db.query(Device)
+        .filter(
+            Device.id
+            == inspection.device_id
+        )
+        .first()
+    )
+
+    if not device:
+        raise HTTPException(
+            status_code=404,
+            detail="Device not found"
+        )
+
+    return device
+
+
+def get_photo_progress(
+    inspection: Inspection,
+    db: Session
+):
+    captured = (
+        db.query(InspectionPhoto)
+        .filter(
+            InspectionPhoto.inspection_id
+            == inspection.id
+        )
+        .count()
+    )
+
+    return {
+        "photos_captured": captured,
+        "photos_total": 6,
+        "photos_complete": captured >= 6,
+    }
+
+
+def get_diagnostics_progress(
+    inspection: Inspection
+):
+    complete = (
+        inspection.working is not None
+        or inspection.diagnostics_score is not None
+    )
+
+    return {
+        "diagnostics_complete": complete,
+        "working": inspection.working,
+        "diagnostics_score": inspection.diagnostics_score,
+    }
+
+
+@router.get(
+    "/{inspection_code}",
+    response_model=InspectionStatusResponse
+)
+def get_inspection_status(
+    inspection_code: str,
+    db: Session = Depends(get_db)
+):
+    inspection = get_inspection_record(
+        inspection_code,
+        db
+    )
+
+    device = get_device_record(
+        inspection,
+        db
+    )
+
+    photos = get_photo_progress(
+        inspection,
+        db
+    )
+
+    diagnostics = get_diagnostics_progress(
+        inspection
+    )
+
+    return InspectionStatusResponse(
+        inspection_code=inspection.inspection_code,
+        link_code=inspection.link_code,
+        brand=device.brand,
+        model=device.model,
+        storage=device.storage,
+        status=inspection.status,
+        photos_captured=photos["photos_captured"],
+        photos_total=6,
+        photos_complete=photos["photos_complete"],
+        diagnostics_complete=(
+            diagnostics["diagnostics_complete"]
+        ),
+        valuable=(
+            photos["photos_complete"]
+            and diagnostics["diagnostics_complete"]
+        ),
+        working=diagnostics["working"],
+        diagnostics_score=diagnostics[
+            "diagnostics_score"
+        ],
+    )
+
+
+# ============================================================
+# JOIN AN INSPECTION WITH A LINK CODE
+# ============================================================
+
+@router.post(
+    "/link",
+    response_model=LinkInspectionResponse
+)
+def link_inspection(
+    data: LinkInspectionRequest,
+    db: Session = Depends(get_db)
+):
+    code = data.link_code.strip()
+
+    inspection = (
+        db.query(Inspection)
+        .filter(
+            Inspection.link_code == code
+        )
+        .first()
+    )
+
+    if not inspection:
+        raise HTTPException(
+            status_code=404,
+            detail=(
+                "No inspection found for that code. "
+                "Check the 6-digit code and try again."
+            )
+        )
+
+    device = get_device_record(
+        inspection,
+        db
+    )
+
+    photos = get_photo_progress(
+        inspection,
+        db
+    )
+
+    diagnostics = get_diagnostics_progress(
+        inspection
+    )
+
+    if not photos["photos_complete"]:
+        need = "photos"
+    elif not diagnostics["diagnostics_complete"]:
+        need = "diagnostics"
+    else:
+        need = "complete"
+
+    return LinkInspectionResponse(
+        inspection_code=inspection.inspection_code,
+        link_code=inspection.link_code,
+        brand=device.brand,
+        model=device.model,
+        storage=device.storage,
+        need=need,
+    )
+
+
+# ============================================================
+# SUBMIT DIAGNOSTICS
+# ============================================================
+
+@router.post(
+    "/{inspection_code}/diagnostics",
+    response_model=DiagnosticsResponse
+)
+def submit_diagnostics(
+    inspection_code: str,
+    data: DiagnosticsRequest,
+    db: Session = Depends(get_db)
+):
+    inspection = get_inspection_record(
+        inspection_code,
+        db
+    )
+
+    inspection.working = data.working
+
+    inspection.diagnostics_score = (
+        data.diagnostics_score
+    )
+
+    inspection.diagnostics_report = (
+        json.dumps(data.diagnostics_report)
+        if data.diagnostics_report
+        else None
+    )
+
+    db.commit()
+
+    return DiagnosticsResponse(
+        inspection_code=inspection.inspection_code,
+        accepted=True,
+        working=inspection.working,
+        diagnostics_score=inspection.diagnostics_score,
     )
 
 

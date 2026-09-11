@@ -41,10 +41,16 @@ def rag_search(request: RAGSearchRequest):
             detail="top_k must be between 1 and 20"
         )
 
-    result = generate_rag_answer(
-        query=query,
-        top_k=request.top_k
-    )
+    try:
+        result = generate_rag_answer(
+            query=query,
+            top_k=request.top_k
+        )
+    except RuntimeError as error:
+        raise HTTPException(
+            status_code=503,
+            detail=str(error)
+        )
 
     return {
         "query": query,
