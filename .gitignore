@@ -39,3 +39,5 @@ chroma_db/
 
 # Runtime logs
 *.log
+.vercel
+.env*

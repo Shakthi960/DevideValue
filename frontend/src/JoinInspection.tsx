@@ -65,7 +65,6 @@ export default function JoinInspection({ onBack }: Props) {
   const [uploading, setUploading] = useState(false);
 
   // --- Diagnostics ---
-  const [phoneWorking, setPhoneWorking] = useState<string | null>(null);
   const [sensorTests, setSensorTests] = useState<SensorTest[]>(SENSOR_TESTS.map((t) => ({ ...t, status: "pending" as TestStatus })));
   const [selfReport, setSelfReport] = useState<Record<string, string>>({});
   const [reportIndex, setReportIndex] = useState(0);
@@ -343,8 +342,8 @@ export default function JoinInspection({ onBack }: Props) {
             <p className="xi-sub">We'll run sensor tests on <strong>{deviceModel}</strong>. If the phone can't run a browser or the screen is broken, choose "No" and we'll skip the tests.</p>
             {diagSaving && <LoadingSpinner overlay label="Saving diagnostics…" />}
             <div className="xi-options">
-              <button className="xi-option" onClick={() => { setPhoneWorking("yes"); setPhase("diag_sensors"); runSensorTests(); }}>Yes, the phone is working and I can use it</button>
-              <button className="xi-option" onClick={() => { setPhoneWorking("no"); skipDiagnostics(); }}>No, the phone is not working / display is broken</button>
+<button className="xi-option" onClick={() => { setPhase("diag_sensors"); runSensorTests(); }}>Yes, the phone is working and I can use it</button>
+                <button className="xi-option" onClick={() => { skipDiagnostics(); }}>No, the phone is not working / display is broken</button>
             </div>
             {error && <div className="xi-error">{error}</div>}
           </div>

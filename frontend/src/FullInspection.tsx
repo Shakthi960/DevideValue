@@ -53,6 +53,8 @@ const QUESTIONS: { key: QuestionKey; title: string; step: string; options: [stri
 
 type TestStatus = "pending" | "running" | "passed" | "failed" | "unsupported";
 
+type SensorTest = { id: string; name: string; description: string; status: TestStatus };
+
 const SENSOR_TESTS: { id: string; name: string; description: string }[] = [
   { id: "camera",     name: "Camera",      description: "Check the rear camera responds." },
   { id: "microphone", name: "Microphone",  description: "Check the microphone captures audio." },
@@ -84,7 +86,6 @@ export default function FullInspection({ onBack }: Props) {
   const [brands, setBrands] = useState<string[]>([]);  const [models, setModels] = useState<string[]>([]);  const [variants, setVariants] = useState<any[]>([]);
   const [customBrand, setCustomBrand] = useState("");  const [customModel, setCustomModel] = useState("");  const [customStorage, setCustomStorage] = useState("");
   const [catalogBusy, setCatalogBusy] = useState(false);  const [catalogNote, setCatalogNote] = useState("");  const [priceInput, setPriceInput] = useState("");
-  const [deviceChecking, setDeviceChecking] = useState(false);
 
   // --- Questionnaire ---
   const [qIndex, setQIndex] = useState(0);  const [answers, setAnswers] = useState<Record<string, string>>({});
@@ -110,7 +111,7 @@ export default function FullInspection({ onBack }: Props) {
   const [sensorTests, setSensorTests] = useState<SensorTest[]>(SENSOR_TESTS.map((t) => ({ ...t, status: "pending" as TestStatus })));
   const [selfReport, setSelfReport] = useState<Record<string, string>>({});
   const [reportIndex, setReportIndex] = useState(0);
-  const [diagSaving, setDiagSaving] = useState(false);
+  const [, setDiagSaving] = useState(false);
   const touchCount = useRef(0);
 
   // --- Result ---
@@ -432,7 +433,7 @@ export default function FullInspection({ onBack }: Props) {
             {error && <div className="xi-error">{error}</div>}
             {warning && (<div className="xi-warning"><p>{warning}</p><div className="catalog-form"><input type="number" min="0" placeholder="Estimated price in ₹ (optional)" value={priceInput} onChange={(e) => setPriceInput(e.target.value)} disabled={catalogBusy} /><button className="catalog-btn" onClick={handleAddToCatalog} disabled={catalogBusy}>{catalogBusy ? "Adding..." : "Add to catalog"}</button></div></div>)}
             {catalogNote && <div className="catalog-note">{catalogNote}</div>}
-            <button className="xi-primary-btn" onClick={() => setPhase("questions")} disabled={deviceChecking || loading || !brand || !model || !storage}>Start Questionnaire →</button>
+            <button className="xi-primary-btn" onClick={() => setPhase("questions")} disabled={loading || !brand || !model || !storage}>Start Questionnaire →</button>
           </div>
         </main>
       </div>
