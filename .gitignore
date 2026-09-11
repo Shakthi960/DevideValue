@@ -41,3 +41,8 @@ chroma_db/
 *.log
 .vercel
 .env*
+
+# --- Vercel local build artifacts ---
+backend/api/pyproject.toml
+backend/api/uv.lock
+backend/api/.python-version
