@@ -592,14 +592,26 @@ def exchange_inspection_valuation(
     # 4. Run photo analysis (AI physical condition)
     # ---------------------------------------------------------
 
-    analysis = analyze_photos(
-        inspection_code,
-        db
-    )
-
-    ai_condition_score = (
-        extract_ai_condition_score(analysis)
-    )
+    try:
+        analysis = analyze_photos(
+            inspection_code,
+            db
+        )
+        ai_condition_score = (
+            extract_ai_condition_score(analysis)
+        )
+    except Exception as e:
+        try:
+            from app.core.logger import get_logger
+            get_logger(__name__).exception("Photo analysis failed during complete-valuate for %s", inspection_code)
+        except Exception:
+            pass
+        analysis = {
+            "overall_photo_quality": 0,
+            "photos": [],
+            "views_analyzed": 0,
+        }
+        ai_condition_score = 0
 
     # When the AI could not read the physical condition, report
     # the questionnaire score instead of a null, so the client
@@ -775,14 +787,26 @@ def complete_inspection_valuation(
     # 4. Run photo analysis (AI physical condition)
     # ---------------------------------------------------------
 
-    analysis = analyze_photos(
-        inspection_code,
-        db
-    )
-
-    ai_condition_score = (
-        extract_ai_condition_score(analysis)
-    )
+    try:
+        analysis = analyze_photos(
+            inspection_code,
+            db
+        )
+        ai_condition_score = (
+            extract_ai_condition_score(analysis)
+        )
+    except Exception as e:
+        try:
+            from app.core.logger import get_logger
+            get_logger(__name__).exception("Photo analysis failed during complete-valuate for %s", inspection_code)
+        except Exception:
+            pass
+        analysis = {
+            "overall_photo_quality": 0,
+            "photos": [],
+            "views_analyzed": 0,
+        }
+        ai_condition_score = 0
 
     # ---------------------------------------------------------
     # 5. Single ML valuation
