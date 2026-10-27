@@ -747,3 +747,41 @@
   display: none;
 }
 
+
+
+/* =========================
+   CAMERA LOADING OVERLAY
+   ========================= */
+
+.camera-loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at center, rgba(15, 23, 42, 0.55) 0%, rgba(15, 23, 42, 0.75) 100%);
+  z-index: 10;
+}
+
+.camera-loading .loading-spinner {
+  padding: 20px 16px;
+}
+
+.camera-loading .spinner-label {
+  color: #e2e8f0;
+}
+
+.camera-loading .loading-spinner--md .loading-spinner__wheel {
+  width: 76px;
+  height: 76px;
+}
+
+.camera-loading .loading-spinner--md .spinner-logo {
+  width: 50px;
+  height: 50px;
+}
+
+.camera-loading .loading-spinner--md .spinner-logo img {
+  width: 44px;
+  height: 44px;
+}
