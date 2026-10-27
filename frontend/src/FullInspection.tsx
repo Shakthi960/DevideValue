@@ -5,6 +5,7 @@ import "./Diagnostics.css";
 import SelectOrCustom, { CUSTOM } from "./components/SelectOrCustom";
 import LoadingSpinner from "./components/LoadingSpinner";
 import logo from "./logo.png";
+import AutoDiagnostics from "./components/AutoDiagnostics";
 import {
   formatINR,
   getApiUrl,
@@ -20,7 +21,7 @@ type Phase =
   | "diagnostics"
   | "result";
 
-type DiagPhase = "gate" | "sensors" | "report" | "saving";
+type DiagPhase = "gate" | "sensors" | "report" | "saving" | "auto";
 
 type PhotoType =
   | "front" | "back" | "left" | "right" | "top" | "bottom";
@@ -106,7 +107,7 @@ export default function FullInspection({ onBack }: Props) {
   const [photoPhase, setPhotoPhase] = useState<"capture" | "complete">("capture");
 
   // --- Diagnostics ---
-  const [diagPhase, setDiagPhase] = useState<DiagPhase>("gate");
+  const [diagPhase, setDiagPhase] = useState<DiagPhase>("auto");
   const [phoneWorking, setPhoneWorking] = useState<string | null>(null);
   const [sensorTests, setSensorTests] = useState<SensorTest[]>(SENSOR_TESTS.map((t) => ({ ...t, status: "pending" as TestStatus })));
   const [selfReport, setSelfReport] = useState<Record<string, string>>({});
@@ -600,6 +601,31 @@ export default function FullInspection({ onBack }: Props) {
   // ================================================================
 
   if (phase === "diagnostics") {
+    if (diagPhase === "auto") {
+      if (!inspectionCode) return <div className="xi-container"><p style={{textAlign:"center"}}>Missing inspection code.</p></div>;
+      return (
+        <AutoDiagnostics
+          inspectionCode={inspectionCode}
+          onComplete={async () => {
+            setDiagPhase("saving");
+            setError("");
+            try {
+              const answerList = Object.entries(answers).map(([question_key, answer_value]) => ({ question_key, answer_value }));
+              const vr = await fetch(getApiUrl(`/api/inspections/${inspectionCode}/complete-valuate`), {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ answers: answerList }),
+              });
+              if (!vr.ok) { const e = await vr.json().catch(() => null); throw new Error(e?.detail || "Valuation failed."); }
+              setResult(await vr.json());
+              setPhase("result");
+            } catch (err) { setError(err instanceof Error ? err.message : "Something went wrong."); setDiagPhase("auto"); }
+            finally { setDiagSaving(false); }
+          }}
+          onError={(msg: string) => setError(msg)}
+        />
+      );
+    }
     // --- Gate ---
     if (diagPhase === "gate") {
       return (

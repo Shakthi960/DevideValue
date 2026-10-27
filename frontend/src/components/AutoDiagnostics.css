@@ -1,0 +1,196 @@
+.ad-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+.ad-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.ad-header h1 {
+  font-size: 28px;
+  margin: 0 0 8px 0;
+  color: #0f172a;
+}
+
+.ad-header p {
+  margin: 0;
+  color: #64748b;
+}
+
+.ad-section {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.ad-section h2 {
+  margin: 0 0 16px 0;
+  font-size: 18px;
+  color: #0f172a;
+}
+
+.ad-tests {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ad-test {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+}
+
+.ad-test--running {
+  border-color: #3b82f6;
+  background: #eff6ff;
+}
+
+.ad-test--passed {
+  border-color: #22c55e;
+  background: #f0fdf4;
+}
+
+.ad-test--failed {
+  border-color: #ef4444;
+  background: #fef2f2;
+}
+
+.ad-test--unsupported {
+  border-color: #f59e0b;
+  background: #fffbeb;
+}
+
+.ad-test__name {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.ad-test__desc {
+  font-size: 13px;
+  color: #64748b;
+  margin-top: 2px;
+}
+
+.ad-test__status {
+  font-size: 20px;
+}
+
+.ad-spin {
+  display: inline-block;
+  animation: ad-spin 1s linear infinite;
+}
+
+@keyframes ad-spin {
+  to { transform: rotate(360deg); }
+}
+
+.ad-btn {
+  width: 100%;
+  padding: 14px;
+  background: white;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  color: #0f172a;
+}
+
+.ad-btn--primary {
+  background: #2563eb;
+  border-color: #2563eb;
+  color: white;
+}
+
+.ad-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ad-touch-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.9);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.ad-touch-grid {
+  position: relative;
+  width: 300px;
+  height: 300px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 16px;
+  margin-bottom: 16px;
+}
+
+.ad-touch-dot {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: white;
+  border: none;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+}
+
+.ad-touch-dot--touched {
+  background: #22c55e;
+}
+
+.ad-touch-modal p {
+  color: white;
+  font-size: 16px;
+}
+
+.ad-manual {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ad-manual__row {
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.ad-manual__label {
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: #0f172a;
+}
+
+.ad-manual__options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ad-manual__btn {
+  padding: 8px 16px;
+  background: white;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.ad-manual__btn--active {
+  background: #eff6ff;
+  border-color: #3b82f6;
+  color: #1e40af;
+}
