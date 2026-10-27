@@ -15,10 +15,10 @@ from app.models.device import Device
 from app.services.photo_analyzer import analyze_image
 from app.services.condition_analyzer import analyze_condition
 from app.services.valuation import (
-    EXCHANGE_RATE,
-    get_market_price,
     calculate_condition_score,
-    photo_condition_metrics,
+    collect_photo_features,
+    get_condition_grade,
+    predict_device_value_for_device,
 )
 
 from app.schemas.inspection_answer import (
@@ -378,22 +378,6 @@ def analyze_photos(
 # COMBINED PHOTO VALUATION
 # ============================================================
 
-def get_market_price_for_device(
-    device
-):
-    try:
-        return get_market_price(
-            brand=device.brand,
-            model=device.model,
-            storage=device.storage
-        )
-    except ValueError as error:
-        raise HTTPException(
-            status_code=422,
-            detail=str(error)
-        )
-
-
 def extract_ai_condition_score(
     analysis
 ):
@@ -409,29 +393,6 @@ def extract_ai_condition_score(
             "condition_score"
         )
     )
-
-
-def finalize_prices(
-    inspection,
-    market_price,
-    condition_multiplier,
-    db
-):
-    resale_price = round(
-        market_price * condition_multiplier
-    )
-
-    exchange_price = round(
-        resale_price * EXCHANGE_RATE
-    )
-
-    inspection.estimated_resale_price = resale_price
-    inspection.estimated_exchange_price = exchange_price
-    inspection.status = "valuated"
-
-    db.commit()
-
-    return resale_price, exchange_price
 
 
 @router.post("/{inspection_code}/valuate")
@@ -486,6 +447,9 @@ def photo_valuation(
         extract_ai_condition_score(analysis)
     )
 
+    # A photo-only valuation is meaningless without a
+    # readable physical condition. (The questionnaire flows
+    # fall back to the questionnaire instead of failing.)
     if physical_condition_score is None:
         raise HTTPException(
             status_code=422,
@@ -493,61 +457,64 @@ def photo_valuation(
         )
 
     # ---------------------------------------------------------
-    # 3. ML market price
+    # 3. Single ML valuation
+    #
+    # The AI photo analysis is converted into structured
+    # numeric features (scratch / dent / crack / frame
+    # severities, AI condition score, capture reliability) and
+    # fed into the model TOGETHER WITH the specifications.
+    # There is no condition multiplier.
     # ---------------------------------------------------------
 
-    market_price, new_price_inr, price_source = (
-        get_market_price_for_device(device)
+    valuation = predict_device_value_for_device(
+        brand=device.brand,
+        model=device.model,
+        storage=device.storage,
+        photo_analysis=analysis,
+        working=inspection.working,
+        diagnostics_score=inspection.diagnostics_score,
+        diagnostics_report=inspection.diagnostics_report,
     )
 
-    # ---------------------------------------------------------
-    # 4. Condition multiplier + grade
-    # ---------------------------------------------------------
-
-    condition_multiplier, condition_grade = (
-        photo_condition_metrics(
-            physical_condition_score
-        )
-    )
+    inspection.status = "valuated"
+    db.commit()
 
     # ---------------------------------------------------------
-    # 5. Final prices + persist
-    # ---------------------------------------------------------
-
-    resale_price, exchange_price = finalize_prices(
-        inspection,
-        market_price,
-        condition_multiplier,
-        db
-    )
-
-    # ---------------------------------------------------------
-    # 6. Response
+    # 4. Response - one value
     # ---------------------------------------------------------
 
     return {
         "inspection_code": inspection_code,
 
-        "market_price": market_price,
-        "new_price_inr": new_price_inr,
-        "price_source": price_source,
-        "resale_price": resale_price,
-        "exchange_price": exchange_price,
+        "device_value": valuation["device_value"],
+        "currency": valuation["currency"],
+        "confidence": valuation["confidence"],
 
-        "condition_score": physical_condition_score,
-        "condition_grade": condition_grade,
-        "condition_multiplier": round(
-            condition_multiplier,
-            4
+        "condition_score": valuation["condition_score"],
+        "condition_grade": get_condition_grade(
+            valuation["condition_score"]
         ),
+        "diagnostic_score": valuation[
+            "diagnostic_score"
+        ],
+        "ai_condition_score": valuation[
+            "ai_condition_score"
+        ],
+        "ai_views_analyzed": valuation[
+            "ai_views_analyzed"
+        ],
 
-        "valuation_type": "AI Photo + ML Valuation",
+        "valuation_type": "AI Photo + Device Value Model",
 
         "overall_photo_quality":
             analysis["overall_photo_quality"],
 
         "physical_condition_ai":
             analysis["physical_condition_ai"],
+
+        "photo_features": collect_photo_features(
+            analysis
+        ),
     }
 
 
@@ -634,68 +601,59 @@ def exchange_inspection_valuation(
         extract_ai_condition_score(analysis)
     )
 
+    # When the AI could not read the physical condition, report
+    # the questionnaire score instead of a null, so the client
+    # still gets a single comparable number. This is a
+    # DISPLAY fallback only: the model already fell back to the
+    # questionnaire features internally.
     if ai_condition_score is None:
         ai_condition_score = questionnaire_score
 
     # ---------------------------------------------------------
-    # 5. Combine both condition signals (50/50 blend)
+    # 5. Single ML valuation
+    #
+    # Questionnaire answers and AI photo results are BOTH
+    # converted into individual condition features and passed
+    # to the model together. No 50/50 blend, no multiplier:
+    # the model weighs them.
     # ---------------------------------------------------------
 
-    combined_condition_score = round(
-        (questionnaire_score + ai_condition_score) / 2
+    valuation = predict_device_value_for_device(
+        brand=device.brand,
+        model=device.model,
+        storage=device.storage,
+        answers=answer_dict,
+        photo_analysis=analysis,
+        working=inspection.working,
+        diagnostics_score=inspection.diagnostics_score,
+        diagnostics_report=inspection.diagnostics_report,
     )
 
-    # ---------------------------------------------------------
-    # 6. ML market price
-    # ---------------------------------------------------------
-
-    market_price, new_price_inr, price_source = (
-        get_market_price_for_device(device)
-    )
+    inspection.status = "valuated"
+    db.commit()
 
     # ---------------------------------------------------------
-    # 7. Condition multiplier + grade
-    # ---------------------------------------------------------
-
-    condition_multiplier, condition_grade = (
-        photo_condition_metrics(
-            combined_condition_score
-        )
-    )
-
-    # ---------------------------------------------------------
-    # 8. Final prices + persist
-    # ---------------------------------------------------------
-
-    resale_price, exchange_price = finalize_prices(
-        inspection,
-        market_price,
-        condition_multiplier,
-        db
-    )
-
-    # ---------------------------------------------------------
-    # 9. Response
+    # 6. Response - one value
     # ---------------------------------------------------------
 
     return {
         "inspection_code": inspection_code,
 
-        "market_price": market_price,
-        "new_price_inr": new_price_inr,
-        "price_source": price_source,
-        "resale_price": resale_price,
-        "exchange_price": exchange_price,
+        "device_value": valuation["device_value"],
+        "currency": valuation["currency"],
+        "confidence": valuation["confidence"],
 
-        "condition_score": combined_condition_score,
-        "condition_grade": condition_grade,
-        "condition_multiplier": round(
-            condition_multiplier,
-            4
-        ),
+        "condition_score": valuation["condition_score"],
+        "diagnostic_score": valuation[
+            "diagnostic_score"
+        ],
+        "ai_condition_score": ai_condition_score,
+        "ai_views_analyzed": valuation[
+            "ai_views_analyzed"
+        ],
 
         "questionnaire_score": questionnaire_score,
-        "ai_condition_score": ai_condition_score,
+        "ai_condition_score_detail": ai_condition_score,
 
         "valuation_type": "Complete Exchange Inspection",
     }
@@ -826,70 +784,55 @@ def complete_inspection_valuation(
         extract_ai_condition_score(analysis)
     )
 
-    if ai_condition_score is None:
-        ai_condition_score = questionnaire_score
-
     # ---------------------------------------------------------
-    # 5. Combine questionnaire + AI photo signals (50/50)
-    #    Diagnostics are included in the result for display
-    #    but are not yet blended into the price formula.
+    # 5. Single ML valuation
+    #
+    # All four evidence sources - questionnaire, AI photos,
+    # diagnostics, and the specifications - go into the model
+    # together as features. The model produces one number.
+    #
+    # This is the flow the redesign was aiming for: diagnostics
+    # now genuinely move the price, because
+    # diagnostic_score / diagnostics_failed_count /
+    # diagnostic_*_failed are model inputs.
     # ---------------------------------------------------------
 
-    combined_condition_score = round(
-        (questionnaire_score + ai_condition_score) / 2
+    valuation = predict_device_value_for_device(
+        brand=device.brand,
+        model=device.model,
+        storage=device.storage,
+        answers=answer_dict,
+        photo_analysis=analysis,
+        working=inspection.working,
+        diagnostics_score=inspection.diagnostics_score,
+        diagnostics_report=inspection.diagnostics_report,
     )
 
-    # ---------------------------------------------------------
-    # 6. ML market price
-    # ---------------------------------------------------------
-
-    market_price, new_price_inr, price_source = (
-        get_market_price_for_device(device)
-    )
+    inspection.status = "valuated"
+    db.commit()
 
     # ---------------------------------------------------------
-    # 7. Condition multiplier + grade
-    # ---------------------------------------------------------
-
-    condition_multiplier, condition_grade = (
-        photo_condition_metrics(
-            combined_condition_score
-        )
-    )
-
-    # ---------------------------------------------------------
-    # 8. Final prices + persist
-    # ---------------------------------------------------------
-
-    resale_price, exchange_price = finalize_prices(
-        inspection,
-        market_price,
-        condition_multiplier,
-        db
-    )
-
-    # ---------------------------------------------------------
-    # 9. Response
+    # 6. Response - one value
     # ---------------------------------------------------------
 
     return {
         "inspection_code": inspection_code,
 
-        "market_price": market_price,
-        "new_price_inr": new_price_inr,
-        "price_source": price_source,
-        "resale_price": resale_price,
-        "exchange_price": exchange_price,
+        "device_value": valuation["device_value"],
+        "currency": valuation["currency"],
+        "confidence": valuation["confidence"],
 
-        "condition_score": combined_condition_score,
-        "condition_grade": condition_grade,
-        "condition_multiplier": round(
-            condition_multiplier,
-            4
-        ),
+        "condition_score": valuation["condition_score"],
+        "diagnostic_score": valuation[
+            "diagnostic_score"
+        ],
+        "ai_condition_score": ai_condition_score,
+        "ai_views_analyzed": valuation[
+            "ai_views_analyzed"
+        ],
 
         "questionnaire_score": questionnaire_score,
-        "ai_condition_score": ai_condition_score,
+        "ai_condition_score_detail": ai_condition_score,
         "diagnostics": diagnostics,
 
         "overall_photo_quality":

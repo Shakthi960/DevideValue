@@ -372,26 +372,23 @@ class TestInspectionFlow:
 
     def _fake_valuation(self, **kwargs):
         return {
-            "market_price": 24000,
-            "resale_price": 18000,
-            "exchange_price": 15000,
-            "new_price_inr": 24000,
-            "price_source": "ml score",
+            "device_value": 18000,
+            "currency": "INR",
+            "confidence": 0.72,
             "condition_score": 82,
-            "condition_grade": "A",
+            "diagnostic_score": 100.0,
             "device": {
                 "brand": "Vivo",
                 "model": "S2 5G",
                 "storage": "8GB + 128GB",
             },
-            "model_source": "ml",
             "valuation_type": "quick_value",
         }
 
     def test_create_and_value_inspection(self, monkeypatch):
         monkeypatch.setattr(
             inspection_route,
-            "calculate_valuation",
+            "predict_device_value_for_device",
             self._fake_valuation,
         )
 
@@ -434,20 +431,26 @@ class TestInspectionFlow:
         data = valued.json()
 
         assert data["inspection_code"] == code
-        assert data["market_price"] == 24000
-        assert data["resale_price"] == 18000
-        assert data["exchange_price"] == 15000
-        assert data["condition_grade"] == "A"
+        assert data["device_value"] == 18000
+        assert data["currency"] == "INR"
+        assert data["diagnostic_score"] == 100.0
         assert data["device"] == {
             "brand": "Vivo",
             "model": "S2 5G",
             "storage": "8GB + 128GB",
+            "storage_gb": None,
         }
+
+        # The redesign returns one value. The legacy
+        # resale/exchange keys are gone from the schema.
+        assert "resale_price" not in data
+        assert "exchange_price" not in data
+        assert "market_price" not in data
 
     def test_answers_unknown_code_returns_404(self, monkeypatch):
         monkeypatch.setattr(
             inspection_route,
-            "calculate_valuation",
+            "predict_device_value_for_device",
             self._fake_valuation,
         )
 
@@ -699,8 +702,22 @@ class TestCompleteValuation:
 
         monkeypatch.setattr(
             photo_analysis_route,
-            "get_market_price_for_device",
-            lambda device: (13500, 20999, "ml score"),
+            "predict_device_value_for_device",
+            lambda **kwargs: {
+                "device_value": 13500,
+                "currency": "INR",
+                "confidence": 0.7,
+                "condition_score": 70,
+                "diagnostic_score": 82.0,
+                "device": {
+                    "brand": "Vivo",
+                    "model": "S2 5G",
+                    "storage": "8GB + 128GB",
+                },
+                "valuation_type": "complete_value",
+                "ai_condition_score": 64.0,
+                "ai_views_analyzed": 0,
+            },
         )
 
         response = client.post(
@@ -719,15 +736,16 @@ class TestCompleteValuation:
 
         assert data["valuation_type"] == "Complete Full Inspection"
         assert data["inspection_code"] == code
-        assert data["market_price"] == 13500
-        assert data["resale_price"] > 0
-        assert data["exchange_price"] > 0
+        assert data["device_value"] == 13500
         assert data["questionnaire_score"] >= 0
         assert data["ai_condition_score"] == 64
         assert data["diagnostics"]["working"] == "yes"
         assert data["diagnostics"]["diagnostics_score"] == 82.0
         assert data["diagnostics"]["report"]["finalGrade"] == "Good"
-        assert "condition_grade" in data
+
+        # One value only.
+        assert "resale_price" not in data
+        assert "exchange_price" not in data
 
 
 class TestMlPredict:
@@ -955,8 +973,22 @@ class TestTwoPhoneCoordination:
         )
         monkeypatch.setattr(
             photo_analysis_route,
-            "get_market_price_for_device",
-            lambda device: (14000, 21999, "ml dataset"),
+            "predict_device_value_for_device",
+            lambda **kwargs: {
+                "device_value": 14000,
+                "currency": "INR",
+                "confidence": 0.7,
+                "condition_score": 70,
+                "diagnostic_score": 85.0,
+                "device": {
+                    "brand": "Vivo",
+                    "model": "S2 5G",
+                    "storage": "8GB + 128GB",
+                },
+                "valuation_type": "complete_value",
+                "ai_condition_score": 68.0,
+                "ai_views_analyzed": 0,
+            },
         )
 
         resp = client.post(
@@ -974,9 +1006,9 @@ class TestTwoPhoneCoordination:
         result = resp.json()
         assert result["inspection_code"] == code
         assert result["valuation_type"] == "Complete Full Inspection"
-        assert result["market_price"] == 14000
-        assert result["resale_price"] > 0
-        assert result["exchange_price"] > 0
+        assert result["device_value"] == 14000
+        assert "resale_price" not in result
+        assert "exchange_price" not in result
         assert result["ai_condition_score"] == 68
         assert result["questionnaire_score"] > 0
         assert result["diagnostics"]["working"] == "yes"
@@ -1016,8 +1048,22 @@ class TestTwoPhoneCoordination:
         )
         monkeypatch.setattr(
             photo_analysis_route,
-            "get_market_price_for_device",
-            lambda device: (10000, 18000, "dataset"),
+            "predict_device_value_for_device",
+            lambda **kwargs: {
+                "device_value": 10000,
+                "currency": "INR",
+                "confidence": 0.5,
+                "condition_score": 40,
+                "diagnostic_score": 0.0,
+                "device": {
+                    "brand": "Vivo",
+                    "model": "S2 5G",
+                    "storage": "8GB + 128GB",
+                },
+                "valuation_type": "complete_value",
+                "ai_condition_score": 64.0,
+                "ai_views_analyzed": 0,
+            },
         )
 
         resp = client.post(
@@ -1029,4 +1075,7 @@ class TestTwoPhoneCoordination:
         result = resp.json()
         assert result["diagnostics"]["working"] == "no"
         assert result["diagnostics"]["diagnostics_score"] == 0
-        assert result["resale_price"] > 0
+
+        # A non-working phone is still valued, just lower.
+        assert result["device_value"] > 0
+        assert "resale_price" not in result

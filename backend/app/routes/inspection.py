@@ -29,7 +29,7 @@ from app.schemas.inspection_answer import (
 )
 
 from app.services.valuation import (
-    calculate_valuation
+    predict_device_value_for_device
 )
 
 
@@ -450,11 +450,18 @@ def submit_answers(
 
     try:
 
-        valuation = calculate_valuation(
+        valuation = predict_device_value_for_device(
             brand=device.brand,
             model=device.model,
             storage=device.storage,
-            answers=answer_dict
+            answers=answer_dict,
+            working=inspection.working,
+            diagnostics_score=(
+                inspection.diagnostics_score
+            ),
+            diagnostics_report=(
+                inspection.diagnostics_report
+            ),
         )
 
     except ValueError as e:
@@ -479,63 +486,25 @@ def submit_answers(
     # Update inspection
     # --------------------------------------------------------
 
-    inspection.estimated_resale_price = (
-        valuation["resale_price"]
-    )
-
-    inspection.estimated_exchange_price = (
-        valuation["exchange_price"]
-    )
-
+    # The single DEVICE VALUE. The legacy resale/exchange
+    # columns are intentionally left untouched: the schema and
+    # the database layer are out of scope for the valuation
+    # redesign, so the value is reported through the API only.
     inspection.status = "valuated"
 
     db.commit()
 
     # --------------------------------------------------------
-    # Response
+    # Response - one value, no resale/exchange split
     # --------------------------------------------------------
 
     return ValuationResponse(
-
-        inspection_code=(
-            inspection.inspection_code
-        ),
-
-        market_price=(
-            valuation["market_price"]
-        ),
-
-        resale_price=(
-            valuation["resale_price"]
-        ),
-
-        exchange_price=(
-            valuation["exchange_price"]
-        ),
-
-        new_price_inr=(
-            valuation.get("new_price_inr")
-        ),
-
-        price_source=(
-            valuation.get("price_source")
-        ),
-
-        condition_score=(
-            valuation["condition_score"]
-        ),
-
-        condition_grade=(
-            valuation["condition_grade"]
-        ),
-
+        inspection_code=inspection.inspection_code,
+        device_value=valuation["device_value"],
+        currency=valuation["currency"],
+        confidence=valuation["confidence"],
+        condition_score=valuation["condition_score"],
+        diagnostic_score=valuation["diagnostic_score"],
         device=valuation["device"],
-
-        model_source=(
-            valuation["model_source"]
-        ),
-
-        valuation_type=(
-            valuation["valuation_type"]
-        ),
+        valuation_type=valuation["valuation_type"],
     )

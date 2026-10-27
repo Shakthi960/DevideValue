@@ -14,28 +14,28 @@ class InspectionAnswersRequest(BaseModel):
 class ValuationDevice(BaseModel):
     brand: str
     model: str
-    storage: str
+    storage: str | None = None
+    storage_gb: int | None = None
 
 
 class ValuationResponse(BaseModel):
+    """Single-value response.
+
+    The old response carried market_price, resale_price and
+    exchange_price. The platform now produces ONE number,
+    `device_value`, so only that is returned. `resale_price`
+    and `exchange_price` are gone by design, not by omission.
+    """
+
     inspection_code: str
 
-    market_price: float
-
-    resale_price: float
-
-    exchange_price: float
-
-    new_price_inr: float | None = None
-
-    price_source: str | None = None
+    device_value: float
+    currency: str = "INR"
+    confidence: float
 
     condition_score: int
-
-    condition_grade: str
+    diagnostic_score: float | None = None
 
     device: ValuationDevice
-
-    model_source: str
 
     valuation_type: str

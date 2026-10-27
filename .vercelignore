@@ -1,0 +1,32 @@
+# Vercel local build artifacts (not for remote deploy - use requirements.txt)
+backend/api/pyproject.toml
+backend/api/uv.lock
+backend/api/.python-version
+
+# Secrets - never upload
+.env
+.env.local
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+**/__pycache__/
+venv/
+.venv/
+.pytest_cache/
+*.py[cod]
+
+# Node
+node_modules/
+
+# Runtime data / models
+misc/
+chroma_db/
+*.pkl
+*.joblib
+yolo26n.pt
+
+# Logs
+*.log
+uvicorn.log

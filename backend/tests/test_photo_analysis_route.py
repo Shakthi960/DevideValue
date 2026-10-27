@@ -143,9 +143,26 @@ class TestPhotoAnalyze:
             ],
         }
 
-    def _cube_market_price(self, market_price=24000):
-        def _fake(device):
-            return (market_price, market_price, "ml score")
+    def _fake_valuation(self, device_value=24000):
+        def _fake(**kwargs):
+            return {
+                "device_value": device_value,
+                "currency": "INR",
+                "confidence": 0.7,
+                "condition_score": 85,
+                "diagnostic_score": 100.0,
+                "condition_grade": "A",
+                "ai_condition_score": 85.0,
+                "ai_views_analyzed": 6,
+                "evidence_coverage": 1.0,
+                "reference_price": device_value,
+                "device": {
+                    "brand": "Vivo",
+                    "model": "S2 5G",
+                    "storage": "8GB + 128GB",
+                },
+                "valuation_type": "photo_value",
+            }
 
         return _fake
 
@@ -303,8 +320,8 @@ class TestPhotoAnalyze:
         )
         monkeypatch.setattr(
             photo_analysis_route,
-            "get_market_price_for_device",
-            self._cube_market_price(24000),
+            "predict_device_value_for_device",
+            self._fake_valuation(24000),
         )
 
         client, engine = self._client()
@@ -319,13 +336,17 @@ class TestPhotoAnalyze:
         data = response.json()
 
         assert data["inspection_code"] == code
-        assert data["market_price"] == 24000
-        assert data["resale_price"] == round(
-            24000 * (0.60 + 0.85 * 0.40)
-        )
+        assert data["device_value"] == 24000
         assert data["condition_score"] == 85
         assert data["condition_grade"] == "A"
-        assert data["valuation_type"] == "AI Photo + ML Valuation"
+        assert data["valuation_type"] == (
+            "AI Photo + Device Value Model"
+        )
+
+        # The photo multiplier is gone: no resale/exchange split.
+        assert "resale_price" not in data
+        assert "exchange_price" not in data
+        assert "market_price" not in data
 
     def test_valuate_422_when_no_condition(self, monkeypatch):
         analysis = self._canned_analysis()
@@ -342,8 +363,8 @@ class TestPhotoAnalyze:
         )
         monkeypatch.setattr(
             photo_analysis_route,
-            "get_market_price_for_device",
-            self._cube_market_price(24000),
+            "predict_device_value_for_device",
+            self._fake_valuation(24000),
         )
 
         client, engine = self._client()
@@ -360,6 +381,9 @@ class TestPhotoAnalyze:
         )
 
     def test_exchange_valuate_happy_path(self, monkeypatch):
+        """The /exchange-valuate path still works, but it now
+        returns the single device value, not an exchange sum."""
+
         monkeypatch.setattr(
             photo_analysis_route,
             "analyze_photos",
@@ -367,8 +391,8 @@ class TestPhotoAnalyze:
         )
         monkeypatch.setattr(
             photo_analysis_route,
-            "get_market_price_for_device",
-            self._cube_market_price(24000),
+            "predict_device_value_for_device",
+            self._fake_valuation(24000),
         )
 
         client, engine = self._client()
@@ -396,12 +420,13 @@ class TestPhotoAnalyze:
 
         assert data["inspection_code"] == code
         assert data["valuation_type"] == "Complete Exchange Inspection"
-        assert data["market_price"] == 24000
+        assert data["device_value"] == 24000
         assert data["questionnaire_score"] is not None
         assert data["ai_condition_score"] == 85
-        assert data["condition_score"] == round(
-            (data["questionnaire_score"] + 85) / 2
-        )
+        assert data["condition_score"] == 85
+
+        assert "exchange_price" not in data
+        assert "resale_price" not in data
 
     def test_exchange_valuate_falls_back_to_questionnaire(self, monkeypatch):
         analysis = self._canned_analysis()
@@ -418,8 +443,8 @@ class TestPhotoAnalyze:
         )
         monkeypatch.setattr(
             photo_analysis_route,
-            "get_market_price_for_device",
-            self._cube_market_price(24000),
+            "predict_device_value_for_device",
+            self._fake_valuation(24000),
         )
 
         client, engine = self._client()
@@ -446,4 +471,4 @@ class TestPhotoAnalyze:
         data = response.json()
 
         assert data["ai_condition_score"] == data["questionnaire_score"]
-        assert data["condition_score"] == data["questionnaire_score"]
+        assert data["device_value"] > 0
