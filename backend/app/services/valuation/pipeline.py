@@ -328,8 +328,20 @@ def predict_device_value_for_device(
 
     diagnostic_score = row.get("diagnostic_score")
 
+    ev = dict(context.get("evidence") or {})
+    ev["coverage"] = coverage
+    ev["working"] = globals().get("working", None)
+    # try to pull from locals
+    try:
+        ev["working"] = working
+    except Exception:
+        pass
+    try:
+        ev["diagnostics_report"] = diagnostics_report
+    except Exception:
+        pass
     prediction_clamped = dict(prediction)
-    prediction_clamped = _aggressive_clamp(prediction_clamped, condition_score, {"coverage": coverage, **(context.get("evidence") or {})}, context)
+    prediction_clamped = _aggressive_clamp(prediction_clamped, condition_score, ev, {**context, "working": ev.get("working")})
 
     result = {
         # --- The one number ---------------------------------
@@ -440,27 +452,52 @@ def _aggressive_clamp(prediction, condition_score, evidence, context):
 
         max_allowed = None
 
-        # Hard caps by grade - if predicted is above these, we cut it
-        if cond < 10:        # Almost dead
+        # Check if phone marked as not working
+        is_not_working = False
+        if isinstance(evidence, dict):
+            w = evidence.get("working")
+            if isinstance(w, str) and w.lower() == "no":
+                is_not_working = True
+            dr = evidence.get("diagnostics_report")
+            if isinstance(dr, dict) and dr.get("working") == "no":
+                is_not_working = True
+            if evidence.get("non_working") is True:
+                is_not_working = True
+        if isinstance(context, dict):
+            if str(context.get("working", "")).lower() == "no":
+                is_not_working = True
+
+        if is_not_working:
+            # Very harsh for non-working devices
+            if ref_f and ref_f > 0:
+                max_allowed = min(ref_f * 0.08, 1200)
+            else:
+                max_allowed = 1000
+            if val_f > max_allowed:
+                prediction["device_value"] = int(round(max_allowed))
+                if prediction.get("confidence") is not None:
+                    prediction["confidence"] = max(0.05, float(prediction["confidence"]) * 0.5)
+            return prediction
+
+        if cond < 10:
             max_allowed = 600
-        elif cond < 15:      # F
+        elif cond < 15:
             max_allowed = 800
-        elif cond < 25:      # D-
+        elif cond < 25:
             max_allowed = 1000
-        elif cond < 35:      # D
+        elif cond < 35:
             max_allowed = 1500
-        elif cond < 45:      # D+
+        elif cond < 45:
             max_allowed = 2000
-        elif cond < 55:      # C-
+        elif cond < 55:
             max_allowed = 3500
-        elif cond < 65:      # C
+        elif cond < 65:
             max_allowed = 5000
-        elif cond < 75:      # C+/B-
+        elif cond < 75:
             max_allowed = 6500
         else:
             max_allowed = None
 
-        # Be MUCH stricter relative to reference price
         if ref_f and ref_f > 0:
             if cond < 35:
                 max_allowed = min(max_allowed or ref_f * 0.10, ref_f * 0.12)
@@ -473,7 +510,6 @@ def _aggressive_clamp(prediction, condition_score, evidence, context):
             elif cond < 75:
                 max_allowed = min(max_allowed or ref_f * 0.50, ref_f * 0.60)
 
-        # Low evidence + bad condition = assume worst case
         cov = None
         if isinstance(evidence, dict):
             cov = evidence.get("coverage")
@@ -488,12 +524,10 @@ def _aggressive_clamp(prediction, condition_score, evidence, context):
         if cov is not None and cov < 0.4 and cond < 55:
             max_allowed = min(max_allowed or 2000, 2000)
 
-        # Extra punishment if photos are terrible or almost no data
         if isinstance(evidence, dict):
             if evidence.get("photos") is False and cov is not None and cov < 0.5 and cond < 40:
                 max_allowed = min(max_allowed or 1000, 1000)
 
-        # If it's still way above ref*threshold, force down
         if ref_f and ref_f > 0 and cond < 50:
             hard = ref_f * 0.20
             if max_allowed is None or hard < max_allowed:
